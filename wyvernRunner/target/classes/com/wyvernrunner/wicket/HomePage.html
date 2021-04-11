@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Apache Wicket Quickstart</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:regular,bold' rel='stylesheet'
+          type='text/css'/>
+    <link rel="stylesheet" href="style.css" type="text/css" media="screen" title="Stylesheet"/>
+</head>
+<body>
+<div class="container">
+	<form wicket:id="form">
+    	<div class="row">
+        	<div class="col-sm">
+            	Tank
+            	<div class="form-group">
+
+                    <div style="display: table;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">Hero:</div>
+                            <div style="display: table-cell;">
+                                <select wicket:id="heroes"></select> <br/>
+                            </div>
+                        </div>
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">Attack:</div>
+                            <div style="display: table-cell;">
+                                <input type="text" wicket:id="attackTank"/>
+                            </div>
+                        </div>
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">Defense:</div>
+                            <div style="display: table-cell;">
+                                <input type="text" wicket:id="defenseTank"/>
+                            </div>
+                        </div>
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">Speed:</div>
+                            <div style="display: table-cell;">
+                                <input type="text" wicket:id="speedTank"/>
+                            </div>
+                        </div>
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">Crit Chance:</div>
+                            <div style="display: table-cell;">
+                                <input type="text" wicket:id="ccTank"/>
+                            </div>
+                        </div>
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">Crit Damage:</div>
+                            <div style="display: table-cell;">
+                                <input type="text" wicket:id="cdmgTank"/>
+                            </div>
+                        </div>
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">Effectiveness:</div>
+                            <div style="display: table-cell;">
+                                <input type="text" wicket:id="effTank"/>
+                            </div>
+                        </div>
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">Effect Resistance:</div>
+                            <div style="display: table-cell;">
+                                <input type="text" wicket:id="effresTank"/>
+                            </div>
+                        </div>
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">Dual Attack Chance:</div>
+                            <div style="display: table-cell;">
+                                <input type="text" wicket:id="dualTank"/>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        	</div>
+        	<div class="col-sm">
+            	Hero 1
+            	<div class="form-group">
+                <div style="display: table;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Hero:</div>
+                        <div style="display: table-cell;">
+                            <select wicket:id="heroes"></select> <br/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Attack:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="attackH1"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Defense:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="defenseH1"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Speed:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="speedH1"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Crit Chance:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="ccH1"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Crit Damage:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="cdmgH1"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Effectiveness:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="effH2"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Effect Resistance:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="effresH1"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Dual Attack Chance:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="dualH1"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			</div>
+        	<div class="col-sm">
+            	Hero 2
+            	<div class="form-group">
+                <div style="display: table;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Hero:</div>
+                        <div style="display: table-cell;">
+                            <select wicket:id="heroes"></select> <br/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Attack:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="attackH2"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Defense:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="defenseH2"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Speed:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="speedH2"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Crit Chance:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="ccH2"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Crit Damage:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="cdmgH2"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Effectiveness:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="effH2"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Effect Resistance:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="effresH2"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Dual Attack Chance:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="dualH2"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        	</div>
+        	<div class="col-sm">
+            	Hero 3
+            	<div class="form-group">
+                <div style="display: table;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Hero:</div>
+                        <div style="display: table-cell;">
+                            <select wicket:id="persons"></select> <br/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Attack:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="attackH3"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Defense:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="defenseH3"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Speed:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="speedH3"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Crit Chance:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="ccH3"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Crit Damage:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="cdmgH3"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Effectiveness:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="effH3"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Effect Resistance:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="effresH3"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Dual Attack Chance:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="dualH3"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        	</div>
+		</div>
+		<input type="submit" value="Save"/>
+	</form>
+</div>
+</body>
+</html>
