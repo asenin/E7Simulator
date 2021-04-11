@@ -1,20 +1,11 @@
 package com.wyvernrunner.wicket.pageclasses;
 
-import com.wyvernrunner.wicket.simulator.Hero;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 
-import java.util.List;
-
-public class HeroForm extends Form {
+public class HeroForm extends Form{
 
     //Fields Initializing
 
@@ -61,6 +52,9 @@ public class HeroForm extends Form {
     private int effH3;
     private int effresH3;
     private int dualH3;
+
+    //Test stuff
+    private String postStatus;
 
     //Form function
     public HeroForm(String id){
@@ -112,12 +106,15 @@ public class HeroForm extends Form {
         add(new TextField("effH3"));
         add(new TextField("effresH3"));
         add(new TextField("dualH3"));
+
+        //Test stuff
+        add(new Label("postStatus"));
     }
 
     public final void onSubmit(){
         //execute sim with user stats
         //todo: Make form field verifications (tests)
-
+        postStatus = "Posted!";
 
     }
 
