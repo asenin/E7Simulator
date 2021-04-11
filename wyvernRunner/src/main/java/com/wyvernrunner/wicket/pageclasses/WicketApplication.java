@@ -1,5 +1,6 @@
-package com.wyvernrunner.wicket;
+package com.wyvernrunner.wicket.pageclasses;
 
+import com.wyvernrunner.wicket.pageclasses.HomePage;
 import org.apache.wicket.csp.CSPDirective;
 import org.apache.wicket.csp.CSPDirectiveSrcValue;
 import org.apache.wicket.markup.html.WebPage;

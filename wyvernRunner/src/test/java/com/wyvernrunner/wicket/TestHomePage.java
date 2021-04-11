@@ -1,5 +1,7 @@
 package com.wyvernrunner.wicket;
 
+import com.wyvernrunner.wicket.pageclasses.HomePage;
+import com.wyvernrunner.wicket.pageclasses.WicketApplication;
 import org.apache.wicket.util.tester.WicketTester;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

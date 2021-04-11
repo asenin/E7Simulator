@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="container">
-	<form wicket:id="form">
+	<form wicket:id="heroForm" method="post" id="heroForm">
     	<div class="row">
         	<div class="col-sm">
             	Tank
@@ -27,6 +27,12 @@
                             <div style="display: table-cell;">Attack:</div>
                             <div style="display: table-cell;">
                                 <input type="text" wicket:id="attackTank"/>
+                            </div>
+                        </div>
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">Health:</div>
+                            <div style="display: table-cell;">
+                                <input type="text" wicket:id="healthTank"/>
                             </div>
                         </div>
                         <div style="display: table-row;">
@@ -91,6 +97,12 @@
                         </div>
                     </div>
                     <div style="display: table-row;">
+                        <div style="display: table-cell;">Health:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="healthH1"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
                         <div style="display: table-cell;">Defense:</div>
                         <div style="display: table-cell;">
                             <input type="text" wicket:id="defenseH1"/>
@@ -149,6 +161,12 @@
                         <div style="display: table-cell;">Attack:</div>
                         <div style="display: table-cell;">
                             <input type="text" wicket:id="attackH2"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">Health:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="healthH2"/>
                         </div>
                     </div>
                     <div style="display: table-row;">
@@ -213,6 +231,12 @@
                         </div>
                     </div>
                     <div style="display: table-row;">
+                        <div style="display: table-cell;">Attack:</div>
+                        <div style="display: table-cell;">
+                            <input type="text" wicket:id="healthH3"/>
+                        </div>
+                    </div>
+                    <div style="display: table-row;">
                         <div style="display: table-cell;">Defense:</div>
                         <div style="display: table-cell;">
                             <input type="text" wicket:id="defenseH3"/>
@@ -258,7 +282,8 @@
             </div>
         	</div>
 		</div>
-		<input type="submit" value="Save"/>
+		<input type="submit" value="Optimize!"/>
+        <p wicket:id="postStatus">Not posted yet</p>
 	</form>
 </div>
 </body>

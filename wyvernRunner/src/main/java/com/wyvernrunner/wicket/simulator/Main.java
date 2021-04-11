@@ -1,4 +1,4 @@
-package com.wyvernrunner.wicket;
+package com.wyvernrunner.wicket.simulator;
 
 import java.util.*;
 

@@ -1,6 +1,4 @@
-package com.wyvernrunner.wicket;
-
-import java.util.ArrayList;
+package com.wyvernrunner.wicket.simulator;
 
 public class Monster extends Player implements Main.action{
 

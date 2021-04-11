@@ -1,7 +1,6 @@
-package com.wyvernrunner.wicket;
+package com.wyvernrunner.wicket.simulator;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class Hero extends Player implements Main.action, Serializable {
 

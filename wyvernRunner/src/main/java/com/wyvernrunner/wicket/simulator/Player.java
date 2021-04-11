@@ -1,7 +1,6 @@
-package com.wyvernrunner.wicket;
+package com.wyvernrunner.wicket.simulator;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.wyvernrunner.wicket.simulator.Main;
 
 public abstract class Player implements Main.action{
 
