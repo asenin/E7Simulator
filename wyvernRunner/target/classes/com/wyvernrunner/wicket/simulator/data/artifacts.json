@@ -1,0 +1,45 @@
+{ "artifacts" :{
+  "air_to_surface_missile_misha" : {
+    "id" : "air_to_surface_missile_misha",
+    "name": "Air-to-Surface Missile: MISHA",
+    "scale": [0.15, 0.17, 0.18, 0.2, 0.21, 0.23, 0.24, 0.26, 0.27, 0.29, 0.3],
+    "type": "cdmg"
+  },
+  "a_little_queens_crown": {
+    "id": "a_little_queens_crown",
+    "name": "A Little Queen s Crown",
+    "scale": [0.16, 0.176, 0.192, 0.208, 0.224, 0.24, 0.256, 0.272, 0.288, 0.304, 0.32],
+    "type": "damage",
+    "exclusive": "warrior",
+    "applies": "singletarget"
+  },
+  "adventurer_ras": {
+    "name": "Adventurer Ras",
+    "element": "fire",
+    "classType": "knight",
+    "skills": {
+      "s1": {
+        "rate": 0.9,
+        "pow": 1,
+        "flat": 0.04,
+        "flatType": "hp",
+        "enhance": [0.05, 0.05, 0.05, 0.05, 0.1],
+        "single": true
+      },
+      "s2": {
+        "rate": 1.5,
+        "pow": 1,
+        "enhance": [0.05, 0.05, 0.05, 0.05, 0.1],
+        "single": true
+      },
+      "s3": {
+        "rate": 0.9,
+        "pow": 1,
+        "flat": 0.04,
+        "flatType": "hp",
+        "enhance": [0.05, 0.05, 0.05, 0.05, 0.1],
+        "aoe": true
+      }
+    }
+  }
+}}

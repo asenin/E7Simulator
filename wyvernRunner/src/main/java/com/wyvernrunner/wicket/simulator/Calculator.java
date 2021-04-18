@@ -6,7 +6,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Calculator {
     int randomInt = ThreadLocalRandom.current().nextInt(1, 2 + 1);
 
-    public String hitType(Hero Hero){
+   public String hitType(Hero Hero){
+
 
         if (Hero.getCc()==100){
             return "crit";
@@ -21,7 +22,7 @@ public class Calculator {
         return "miss";
     }
     public double calculate(String hitType, Hero attacker, Hero defender /* Artifact Artifact , Skill Skill*/){
-        //query skill data this will coime from Skill object
+        //query skill data this will come from Skill object
         double skillMultiplier =0;
         double pow=0;
         double flatMod = 0;
@@ -63,6 +64,7 @@ public class Calculator {
         return 0;
     }
     public double artifactDamage(Hero Hero/*Artifact Artifact */){
+
         //From artifact list determines damage
         return 0;
     }

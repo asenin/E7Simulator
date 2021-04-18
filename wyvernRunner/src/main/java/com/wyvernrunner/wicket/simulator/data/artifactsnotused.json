@@ -1,0 +1,419 @@
+{ "artifacts" : {
+  "air_to_surface_missile_misha": {
+    "id": "air_to_surface_missile_misha",
+    "name": "Air-to-Surface Missile: MISHA",
+    "scale": [
+      0.15,
+      0.17,
+      0.18,
+      0.2,
+      0.21,
+      0.23,
+      0.24,
+      0.26,
+      0.27,
+      0.29,
+      0.3
+    ],
+    "type": "cdmg",
+    "class": "ranger"
+  },
+  "a_little_queens_crown": {
+    "id": "a_little_queens_crown",
+    "name": "A Little Queen s Crown",
+    "scale": [
+      0.16,
+      0.176,
+      0.192,
+      0.208,
+      0.224,
+      0.24,
+      0.256,
+      0.272,
+      0.288,
+      0.304,
+      0.32
+    ],
+    "type": "damage",
+    "class": "warrior",
+    "applies": "singletarget"
+  },
+  "a_symbol_of_unity": {
+    "id": "a_symbol_of_unity",
+    "name": "A Symbol of Unity",
+    "scale": [
+      0.08,
+      0.088,
+      0.096,
+      0.104,
+      0.112,
+      0.12,
+      0.128,
+      0.136,
+      0.144,
+      0.152,
+      0.16
+    ],
+    "type": "damage"
+  },
+  "black_hand_of_the_goddess": {
+    "id": "black_hand_of_the_goddess",
+    "name": "Black Hand of the Goddess",
+    "scale": [
+      0.12,
+      0.14,
+      0.15,
+      0.16,
+      0.17,
+      0.18,
+      0.19,
+      0.2,
+      0.21,
+      0.22,
+      0.24
+    ],
+    "type": "cdmg",
+    "class": "mage",
+    "scaletype": "scaledown_per_attack",
+    "maxscale": 5,
+    "operator": "-",
+    "value": "/",
+    "valuescale": 10
+  },
+  "border_coin": {
+    "id": "border_coin",
+    "name": "Border Coin",
+    "scale": [
+      0.075,
+      0.0825,
+      0.09,
+      0.0975,
+      0.105,
+      0.1125,
+      0.12,
+      0.1275,
+      0.135,
+      0.1425,
+      0.15
+    ],
+    "type": "attack",
+    "class": "warrior",
+    "scaletype": "scaleup_per_non_attack",
+    "maxscale": 3,
+    "operator": "*"
+  },
+  "daydream_joker": {
+    "id": "daydream_joker",
+    "name": "Daydream Joker",
+    "scale": [
+      0.015,
+      0.0165,
+      0.018,
+      0.0195,
+      0.021,
+      0.0225,
+      0.024,
+      0.0255,
+      0.027,
+      0.0285,
+      0.03
+    ],
+    "type": "flat",
+    "scaletype": "target_max_hp",
+    "operator": "*"
+  },
+  "dignus_orb": {
+    "id": "dignus_orb",
+    "name": "Dignus Orb",
+    "value": 0.15,
+    "type": "damage_after_non_attack",
+    "class": "mage"
+  },
+  "double_edged_decrescent": {
+    "id": "double_edged_decrescent",
+    "name": "Double-Edged Decrescent",
+    "scale": [
+      0.05,
+      0.055,
+      0.06,
+      0.065,
+      0.07,
+      0.075,
+      0.08,
+      0.085,
+      0.09,
+      0.095,
+      0.1
+    ],
+    "type": "attack",
+    "class": "thief",
+    "scaletype": "scaleup_single_attack",
+    "maxscale": 3,
+    "operator": "*",
+    "effect": {
+      "type": "debuff",
+      "debuffs": [
+        "silence"
+      ],
+      "scaleChance": [
+        0.15,
+        0.165,
+        0.18,
+        0.21,
+        0.225,
+        0.24,
+        0.255,
+        0.27,
+        0.285,
+        0.3
+      ]
+    }
+  },
+  "draco_plate": {
+    "id": "draco_plate",
+    "name": "Draco Plate",
+    "scale": [
+      0.15,
+      0.17,
+      0.18,
+      0.2,
+      0.21,
+      0.23,
+      0.24,
+      0.26,
+      0.27,
+      0.29,
+      0.3
+    ],
+    "type": "cdmg",
+    "class": "warrior"
+  },
+  "dux_noctis": {
+    "id": "dux_noctis",
+    "name": "Dux Noctis",
+    "scale": [
+      0.02,
+      0.022,
+      0.024,
+      0.026,
+      0.028,
+      0.03,
+      0.032,
+      0.034,
+      0.036,
+      0.038,
+      0.04
+    ],
+    "type": "attack",
+    "class": "ranger",
+    "scaletype": "scaleup_critical_hit",
+    "maxscale": 8,
+    "operator": "*"
+  },
+  "els_fist": {
+    "id": "els_fist",
+    "name": "El's Fist",
+    "scale": [
+      0.25,
+      0.275,
+      0.3,
+      0.325,
+      0.35,
+      0.375,
+      0.4,
+      0.425,
+      0.45,
+      0.475,
+      0.5
+    ],
+    "type": "attack",
+    "class": "warrior",
+    "scaletype": "current_hp",
+    "hpscale": {
+      "hp%": [
+        0.25,
+        0.5,
+        0.75
+      ],
+      "scale": [
+        1,
+        0.66,
+        0.33
+      ]
+    },
+    "operator": "*"
+  },
+  "exorcist_tonfa": {
+    "id": "exorcist_tonfa",
+    "name": "Exorcist's Tonfa",
+    "scale": [
+      0.08,
+      0.088,
+      0.096,
+      0.104,
+      0.112,
+      0.12,
+      0.128,
+      0.136,
+      0.144,
+      0.152,
+      0.16
+    ],
+    "type": "damage_if_hp>50"
+  },
+  "elyha_knife": {
+    "id": "elyha_knife",
+    "name": "Elyha's Knife",
+    "scale": [
+      0.1,
+      0.11,
+      0.12,
+      0.13,
+      0.14,
+      0.15,
+      0.16,
+      0.17,
+      0.18,
+      0.19,
+      0.2
+    ],
+    "type": "penetrate",
+    "class": "thief"
+  },
+  "hell_cutter": {
+    "id": "hell_cutter",
+    "name": "Hell Cutter",
+    "scale": [
+      0.02,
+      0.022,
+      0.024,
+      0.026,
+      0.028,
+      0.03,
+      0.032,
+      0.034,
+      0.036,
+      0.038,
+      0.04
+    ],
+    "type": "attackcrit",
+    "class": "warrior",
+    "scaletype": "turn_stack",
+    "operator": "*"
+  },
+  "iron_fan": {
+    "id": "iron_fan",
+    "name": "Iron Fan",
+    "scale": [
+      0.16,
+      0.176,
+      0.192,
+      0.208,
+      0.224,
+      0.24,
+      0.256,
+      0.272,
+      0.288,
+      0.304,
+      0.32
+    ],
+    "type": "damage",
+    "class": "ranger",
+    "condition": "elementice"
+  },
+  "kaladra": {
+    "id": "kaladra",
+    "name": "Kal'adra",
+    "scale": [
+      0.15,
+      0.17,
+      0.18,
+      0.2,
+      0.21,
+      0.23,
+      0.24,
+      0.26,
+      0.27,
+      0.29,
+      0.3
+    ],
+    "type": "damage",
+    "class": "mage",
+    "condition": "enemy_debuffed"
+  },
+  "last_teatime": {
+    "id": "last_teatime",
+    "name": "Last Teatime",
+    "scale": [
+      0.07,
+      0.077,
+      0.084,
+      0.091,
+      0.098,
+      0.105,
+      0.112,
+      0.119,
+      0.126,
+      0.133,
+      0.14
+    ],
+    "type": "damage",
+    "class": "mage",
+    "applies": "aoe",
+    "effect": {
+      "type": "reduce_self_cooldown",
+      "value": 1,
+      "scale": [
+        0.1,
+        0.11,
+        0.12,
+        0.13,
+        0.14,
+        0.15,
+        0.16,
+        0.17,
+        0.18,
+        0.19,
+        0.2
+      ]
+    }
+  },
+  "portrait_of_the_saviors": {
+    "id": "portrait_of_the_saviors",
+    "name": "Portrait of the Saviors",
+    "scale": [
+      0.1,
+      0.11,
+      0.12,
+      0.13,
+      0.14,
+      0.15,
+      0.16,
+      0.17,
+      0.18,
+      0.19,
+      0.2
+    ],
+    "type": "damage_if_hp>50"
+  },
+  "otherworldly_machinery": {
+    "id": "otherworldly_machinery",
+    "name": "Otherworldly Machinery",
+    "scale": [
+      0.08,
+      0.088,
+      0.096,
+      0.104,
+      0.112,
+      0.12,
+      0.128,
+      0.136,
+      0.144,
+      0.152,
+      0.16
+    ],
+    "type": "damage",
+    "class": "ranger",
+    "applies": "aoe"
+  }
+}}

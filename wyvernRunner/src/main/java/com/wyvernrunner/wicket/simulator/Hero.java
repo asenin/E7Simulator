@@ -11,6 +11,8 @@ public class Hero extends Player implements Main.action, Serializable {
         super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual);
     }
 
+
+
     @Override
     public void action(Player player) {
         player.setHealth(getHealth() - (player.getAttack() + 0 )*1*1*(1.871*1)/(player.getDefense()/300+1)*1); // flat modifier / multi / element / pow / hitType)
