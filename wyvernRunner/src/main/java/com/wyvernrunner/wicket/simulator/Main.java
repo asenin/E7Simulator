@@ -193,7 +193,7 @@ public class Main {
                         //activePlayer = pl;
                     //}
 
-                    System.out.println(pl.getName() + " has a CR of : " + String.format("%.2f", sortedCRList.get(i)) +"%");
+                    //System.out.println(pl.getName() + " has a CR of : " + String.format("%.2f", sortedCRList.get(i)) +"%");
                     if (pl.getCRinPercentage() == 100) {
                         pl.setCRinPercentage(0);
                         activePlayer = pl;

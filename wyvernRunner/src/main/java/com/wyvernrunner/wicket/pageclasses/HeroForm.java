@@ -5,7 +5,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 
-public class HeroForm extends Form{
+public class HeroForm<T> extends Form<T>{
 
     //Fields Initializing
 
