@@ -2,7 +2,7 @@ package com.wyvernrunner.wicket.simulator;
 
 import com.wyvernrunner.wicket.simulator.Main;
 
-public abstract class Player implements Main.action{
+public abstract class Player {
 
 
     /*Données:
@@ -52,8 +52,12 @@ public abstract class Player implements Main.action{
         System.out.println(name + " played !"); // affichage console preuve d'avoir joué
     }
 
-
-
+    public void action(Player player) {
+        player.setHealth(getHealth() - (player.getAttack() + 0 )*1*1*(1.871*1)/(player.getDefense()/300+1)*1); // flat modifier / multi / element / pow / hitType)
+        if (player.getHealth() <= 0) {
+            player.setAlive(false); // set it to dead
+        }
+    }
 
 
     //////////////////////////////////////////////////////////
@@ -129,6 +133,7 @@ public abstract class Player implements Main.action{
     public double getMaxhp() {
         return maxhp;
     }
+
     public float getCc() {
         return cc;
     }
