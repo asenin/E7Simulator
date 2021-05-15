@@ -1,0 +1,51 @@
+This file contains the values and descriptions of the different effect fields of artifact objects and their corresponding integer values.
+
+- Type : This field defines the type of effect that the artifact has (i.e: damage mod., debuff, attack boost etc..)
+    (0) Flat : Flat damage mod added to total damage dealt. (damageField)
+    (1) Debuff : Debuff artifact
+    (2) Damage reduction : Flat damage reduction % (POV, SoE, Sepulcrum)
+
+
+- ScaleType : This field is used when Type field is a damage field, defines the scaling value of an effect (examples are DDJ's enemy max HP scaling or border coin's scaline on caster's attack off non attaack skills)
+    (0) Target max HP : Flat damage mod % of target of attack max HP (DDJ)
+    (1) Damage reduction per hit decrease : Proof of Valor implementation
+    (2) Damage reduction per hit increase
+
+
+- Operator : This field defines the operator that is used to calculate the scaled damage, by default it is set to "*"
+    (0) : +
+    (1) : -
+    (2) : /
+
+- Debuff : This field contains an array of the debuffs that can be applied
+    (0) : Decrease Attack (Attack break/down)
+    (1) : Decrease defense (Defense break/down)
+    (2) : Decrease speed (Speed down)
+    (3) : Stun
+    (4) : Unhealable
+    (5) : Burn
+    (6) : Bleed
+    (7) : Cannot buff (Unbuffable)
+    (8) : Sleep
+    (9) : Poison
+    (10) : Provoke (Taunt)
+    (11) : Decrease hit chance (Blind)
+    (12) : Silence (Mute)
+    (13) : Target
+    (14) : Vampiric touch
+    (15) : Magic Nail
+    (16) : Bomb
+    (17) : Curse
+    (18) : Restrict
+    (19) : Redirected provoke
+    (20) : Seal
+    (21) : Curse boss (Banshee queen's curse, abyss floors)
+
+- DebuffTurns : Duration of debuffs applied
+
+- ScaleMax : Maximum scaling of effect
+
+- Constraint : Constraints applied to certain effects
+    (0) : Cannot apply on dual attack or extra attack
+    (1) : Max one on team
+    (2) : Resets on turn start (HC, Sepulcrum..)

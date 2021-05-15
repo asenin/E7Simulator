@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="wyvernRunner:war">
+    <output-path>$PROJECT_DIR$/wyvernRunner/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>wyvernRunner</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="wyvernRunner-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="wyvernRunner:war exploded" />
+    </root>
+  </artifact>
+</component>
