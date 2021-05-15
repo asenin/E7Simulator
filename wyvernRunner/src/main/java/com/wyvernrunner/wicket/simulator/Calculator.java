@@ -28,7 +28,7 @@ public class Calculator {
         double flatMod = 0;
         //This will come from Hero object
         boolean elementAdvantage = true;
-
+        /*
         switch (hitType){
             case "crit":
                 if (elementAdvantage = true){
@@ -60,7 +60,7 @@ public class Calculator {
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + hitType);
-        }
+        }*/
         return 0;
     }
     public double artifactDamage(Hero Hero/*Artifact Artifact */){

@@ -1,45 +1,192 @@
-{ "artifacts" :{
-  "air_to_surface_missile_misha" : {
-    "id" : "air_to_surface_missile_misha",
-    "name": "Air-to-Surface Missile: MISHA",
-    "scale": [0.15, 0.17, 0.18, 0.2, 0.21, 0.23, 0.24, 0.26, 0.27, 0.29, 0.3],
-    "type": "cdmg"
+{
+  "cradle_of_life" : {
+    "id" : "cradle_of_life",
+    "name" : "Cradle of Life",
+    "scale": [
+      0.35,
+      0.385,
+      0.42,
+      0.455,
+      0.49,
+      0.525,
+      0.56,
+      0.595,
+      0.63,
+      0.665,
+      0.7
+    ],
+    "type" : 1,
+    "debuffs" : [
+      0, 6, 9, 11
+    ],
+    "debuffTurns" : 1
   },
-  "a_little_queens_crown": {
-    "id": "a_little_queens_crown",
-    "name": "A Little Queen s Crown",
-    "scale": [0.16, 0.176, 0.192, 0.208, 0.224, 0.24, 0.256, 0.272, 0.288, 0.304, 0.32],
-    "type": "damage",
-    "exclusive": "warrior",
-    "applies": "singletarget"
+  "daydream_joker": {
+    "id": "daydream_joker",
+    "name": "Daydream Joker",
+    "scale": [
+      0.015,
+      0.0165,
+      0.018,
+      0.0195,
+      0.021,
+      0.0225,
+      0.024,
+      0.0255,
+      0.027,
+      0.0285,
+      0.03
+    ],
+    "type": 0,
+    "scaletype": 0
   },
-  "adventurer_ras": {
-    "name": "Adventurer Ras",
-    "element": "fire",
-    "classType": "knight",
-    "skills": {
-      "s1": {
-        "rate": 0.9,
-        "pow": 1,
-        "flat": 0.04,
-        "flatType": "hp",
-        "enhance": [0.05, 0.05, 0.05, 0.05, 0.1],
-        "single": true
-      },
-      "s2": {
-        "rate": 1.5,
-        "pow": 1,
-        "enhance": [0.05, 0.05, 0.05, 0.05, 0.1],
-        "single": true
-      },
-      "s3": {
-        "rate": 0.9,
-        "pow": 1,
-        "flat": 0.04,
-        "flatType": "hp",
-        "enhance": [0.05, 0.05, 0.05, 0.05, 0.1],
-        "aoe": true
-      }
-    }
+  "junkyard_dog" : {
+    "id" : "junkyard_dog",
+    "name" : "Junkyard Dog",
+    "scale" : [
+      0.25,
+      0.275,
+      0.3,
+      0.325,
+      0.35,
+      0.375,
+      0.4,
+      0.425,
+      0.45,
+      0.475,
+      0.5
+    ],
+    "type" : 1,
+    "debuffs" : [
+      5
+    ],
+    "debuffTurns" : 2
+  },
+  "ms_confille" : {
+    "id" : "ms_confille",
+    "name" : "Ms. Confille",
+    "scale" : [
+      0.3,
+      0.33,
+      0.36,
+      0.39,
+      0.42,
+      0.45,
+      0.48,
+      0.51,
+      0.54,
+      0.57,
+      0.6
+    ],
+    "type" : 1,
+    "debuffs" : [
+      1
+    ],
+    "debuffTurns" : 1,
+    "constraint" : 0
+  },
+  "proof_of_valor" : {
+    "id" : "proof_of_valor",
+    "name" : "Proof of Valor",
+    "scale" : [
+      0.15,
+      0.17,
+      0.18,
+      0.20,
+      0.21,
+      0.23,
+      0.24,
+      0.26,
+      0.27,
+      0.29,
+      0.3
+    ],
+    "type" : 2,
+    "scaletype" : 1,
+    "scaleMax" : 10,
+    "constraint" : 1
+  },
+  "sepulcrum" : {
+    "id" : "sepulcrum",
+    "name" : "Sepulcrum",
+    "scale" : [
+      0.04,
+      0.044,
+      0.048,
+      0.052,
+      0.056,
+      0.06,
+      0.064,
+      0.068,
+      0.072,
+      0.078,
+      0.08
+    ],
+    "type" : 2,
+    "scaleType" : 2,
+    "scaleMax" : 3,
+    "constraint" : 2
+  },
+  "siraren": {
+    "id" : "siraren",
+    "name" : "Sira'Ren",
+    "scale" : [
+      0.25,
+      0.275,
+      0.3,
+      0.325,
+      0.35,
+      0.375,
+      0.4,
+      0.425,
+      0.45,
+      0.475,
+      0.5
+    ],
+    "type" : 1,
+    "debuffs" : [
+      0, 8, 9, 11, 12
+    ],
+    "debuffTurns" : 1
+  },
+  "song_of_stars" : {
+    "id" : "song_of_stars",
+    "name" : "Song of Stars",
+    "scale" : [
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95,
+      1
+    ],
+    "type" : 1,
+    "debuffs" : [
+      13
+    ],
+    "debuffTurns" : 2
+  },
+  "sword_of_ezera" : {
+    "id" : "sword_of_ezera",
+    "name" : "Sword of Ezera",
+    "scale" : [
+      0.15,
+      0.16,
+      0.17,
+      0.18,
+      0.19,
+      0.20,
+      0.22,
+      0.24,
+      0.26,
+      0.28,
+      0.3
+    ],
+    "type" : 2
   }
-}}
+}

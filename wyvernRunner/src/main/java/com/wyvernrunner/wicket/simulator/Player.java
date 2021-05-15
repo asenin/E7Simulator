@@ -2,6 +2,8 @@ package com.wyvernrunner.wicket.simulator;
 
 import com.wyvernrunner.wicket.simulator.Main;
 
+import java.util.HashMap;
+
 public abstract class Player {
 
 
@@ -34,6 +36,13 @@ public abstract class Player {
 
     ////////////////////////////
 
+    private HashMap<Integer,Integer> buffList = new HashMap<>(); // check #glossary for every buff ( key : debuff, value = nb turns)
+    private HashMap<Integer,Integer> debuffList = new HashMap<>(); // check #glossary for every debuff ( key : debuff, value = nb turns)
+    private HashMap<String,Integer> skillsCooldown = new HashMap<>(); // skills cooldown
+
+    ////////////////////////////
+
+
     public Player(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual) {
         this.speed = speed;
         this.name = name;
@@ -46,6 +55,8 @@ public abstract class Player {
         this.eff = eff;
         this.effres = effres;
         this.dual = dual;
+        buffList.replaceAll((k,v)->v=0); // reset all buffs
+        debuffList.replaceAll((k,v)->v=0); // reset all debuffs
     }
 
     public void playerPlayed() {

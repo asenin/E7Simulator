@@ -2,6 +2,7 @@ package com.wyvernrunner.wicket.simulator;
 
 import java.util.*;
 
+
 public class Game {
 
     public static double tickValue; // taille de la barre de CR (exemple : si 300 speed qui est le plus rapide alors tickValue = 300 ) //
@@ -10,16 +11,15 @@ public class Game {
     public static ArrayList<String> listA = new ArrayList<>(); // store names of the target lists of allies
     public static ArrayList<String> listE1 = new ArrayList<>(); // store names of the target lists of wave 1
     public static Player front;
+    private static boolean wyvernAlive = true; // true = dead / false = alive
 
 
     public static void main(String[] args) {
-
         long startTime = System.nanoTime(); // start
 
-        // Initiate the game
-        System.out.println("After");
+        // Initiate the wave 1
         initGame(playerList);
-        while(listE1.size() > 0 && listA.size() > 0){ // WAVE 1 stops whenever one list is empty
+        while(listE1.size() < 0 && listA.size() > 0){ // WAVE 1 stops whenever one list is empty
             // simule le déroulement des tours de jeu ( 1 tour = 1 personnage à 100% ) // boucler sur le nombre de joueurs vivants
             //displayCR(playerList)
 
@@ -34,11 +34,16 @@ public class Game {
             if (activePlayer instanceof Hero) { // hero attacking
                 Player currentTarget = getLowHP(listE1);
                 activePlayer.action(currentTarget); // if the current player is a hero, attacks a monster
+
+
                 //System.out.println(activePlayer.getName() +" hit " + getLowHP(listE1).getName());
                 updateDeadList(currentTarget, listE1); // update ennemy alives list
             } else { // monster attacking
                 Player currentTarget = getTarget(listA); // find a target among allies
                 activePlayer.action(playerList.get(currentTarget.getName()));
+
+
+
                 //System.out.println(activePlayer.getName() +" hit " + target);
                 updateDeadList(currentTarget, listA); // update allies alive list
             }
@@ -53,6 +58,9 @@ public class Game {
         long timeElapsed = endTime - startTime;
         System.out.println("Execution time in nanoseconds  : " + timeElapsed);
         System.out.println("Execution time in milliseconds : " + timeElapsed / 1000000);
+
+        System.out.println(damageDealt(3348,1,1,0,233578*0.028,0.95,0,0.3,
+                3.11,1,1.1,1940,0,0,0,0));
 
     }
 
@@ -219,5 +227,38 @@ public class Game {
         tickValue = sortedCRList.get(playerList.size()-1); // Construction de tickValue en fonction de la speed du personnage le plus rapide
     }
 
+    // Sum effectiveDamage and mitigationDamage to get finalDamage
+    // Attack = atk
+    // Atkmod = (buffs / bonus atk)
+    // Rate = rate
+    // FlatMod = (damage based on hp/speed/any stat written on skill description)
+    // Flat2mod = DDJ
+    // gamma(1+pow) = pow!
+    // EnhanceMod = Skill Enhance Damage Increase
+    // HitTypeMod = Miss = .75 Modifier   Hit = 1.00 Modifier   Crushing/Strike = 1.3 Modifier   Critical Hit = Critical Damage Stat Modifier
+    // ElementMod = 1.1 or 1.0
+    // DamageUpMod = Sigret S3,wyvern element advantage, EE : mostly multipliers
+    // TargetDebuffMod = 1.15 or 1
+
+    // DamageReduction = Adamant
+    // DamageTransfer = Aurius
+    // DEFmod = 1 ?
+    // DefensePen = Elyha
+
+
+    public static double damageDealt(double Attack, double Atkmod, double SkillRate, double FlatMod,double FlatMod2, double pow, double SkillEnhanceMods,double extMods, double HitTypeMod, double Target, double ElementalMod, double Defense,
+                                     double DefbreakMod, double PenMod, double DamageReduction, double DamageSharing){
+        double atkMods = (Attack * Atkmod * SkillRate + FlatMod ) * 1.871 + (FlatMod2);
+        double DmgMods = (pow) * (1+SkillEnhanceMods)* (1+extMods);  // *( arti damage + hunt bonus damage + ...)
+        double OtherMods = HitTypeMod * Target * ElementalMod;
+        double DefenseMod = ((1 - PenMod) * (1 - DefbreakMod) * (Defense) / 300 +1);
+        double DamageMitigation = (1-DamageReduction) * (1-DamageSharing);
+        return atkMods*DmgMods*OtherMods*DamageMitigation/DefenseMod;
+    }
+
+
+
+    //((this.getAtk(skillId)*rate + flatMod)*dmgConst + flatMod2) * pow * skillEnhance * elemAdv * target * dmgMod;
+    // ((1-dmgReduc)*(1-dmgTrans))/(((this.def / 300)*this.getPenetration(skill)) + 1);
 
 }
