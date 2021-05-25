@@ -1,5 +1,6 @@
 package com.wyvernrunner.wicket.simulator;
 
+import java.sql.Array;
 import java.util.*;
 
 
@@ -10,6 +11,7 @@ public class Game {
     public static Map<String,Player> playerList = new HashMap<>();
     public static ArrayList<String> listA = new ArrayList<>(); // store names of the target lists of allies
     public static ArrayList<String> listE1 = new ArrayList<>(); // store names of the target lists of wave 1
+    public static Map<String,int[]> skillsCooldown = new HashMap<String, int[]>(); // store CD for each unit
     public static Player front;
     private static boolean wyvernAlive = true; // true = dead / false = alive
 
@@ -19,38 +21,75 @@ public class Game {
 
         // Initiate the wave 1
         initGame(playerList);
-        while(listE1.size() < 0 && listA.size() > 0){ // WAVE 1 stops whenever one list is empty
-            // simule le déroulement des tours de jeu ( 1 tour = 1 personnage à 100% ) // boucler sur le nombre de joueurs vivants
-            //displayCR(playerList)
+        if (playerList.containsKey("GeneralPurrgis")){
+            while (listE1.size() > 0 && listA.size() > 0) { // WAVE 1 stops whenever one list is empty
+                // simule le déroulement des tours de jeu ( 1 tour = 1 personnage à 100% ) // boucler sur le nombre de joueurs vivants
+                //displayCR(playerList)
 
-            // Simulate every unit turn
-            CRcounter(playerList); // print CR de chaque personnage
-            // activePlayer est attribué
+                // Simulate every unit turn
+                CRcounter(playerList); // print CR de chaque personnage
+                // activePlayer est attribué
 
-            // Get the active player
-            // Todo : Coder les actions
-
-
-            if (activePlayer instanceof Hero) { // hero attacking
-                Player currentTarget = getLowHP(listE1);
-                activePlayer.action(currentTarget); // if the current player is a hero, attacks a monster
+                // Get the active player
+                // Todo : Coder les actions
 
 
-                //System.out.println(activePlayer.getName() +" hit " + getLowHP(listE1).getName());
-                updateDeadList(currentTarget, listE1); // update ennemy alives list
-            } else { // monster attacking
-                Player currentTarget = getTarget(listA); // find a target among allies
-                activePlayer.action(playerList.get(currentTarget.getName()));
+                if (activePlayer instanceof Hero) { // hero attacking
+                    Player currentTarget = getLowHP(listE1);
+                    activePlayer.action(currentTarget); // if the current player is a hero, attacks a monster
 
 
+                    //System.out.println(activePlayer.getName() +" hit " + getLowHP(listE1).getName());
+                    updateDeadList(currentTarget, listE1); // update ennemy alives list
+                } else { // monster attacking
+                    Player currentTarget = getTarget(listA); // find a target among allies
+                    if (currentTarget.getName().equals("GeneralPurrgis")) {
 
-                //System.out.println(activePlayer.getName() +" hit " + target);
-                updateDeadList(currentTarget, listA); // update allies alive list
-            }
+                    }
+                    activePlayer.action(playerList.get(currentTarget.getName()));
+
+
+                    //System.out.println(activePlayer.getName() +" hit " + target);
+                    updateDeadList(currentTarget, listA); // update allies alive list
+                }
 
             /*System.out.println("------------------------------------- \n" +
                     "-------------------------------------"
             );*/
+            }
+        } else {
+            while (listE1.size() > 0 && listA.size() > 0) { // WAVE 1 stops whenever one list is empty
+                // simule le déroulement des tours de jeu ( 1 tour = 1 personnage à 100% ) // boucler sur le nombre de joueurs vivants
+                //displayCR(playerList)
+
+                // Simulate every unit turn
+                CRcounter(playerList); // print CR de chaque personnage
+                // activePlayer est attribué
+
+                // Get the active player
+                // Todo : Coder les actions
+
+
+                if (activePlayer instanceof Hero) { // hero attacking
+                    Player currentTarget = getLowHP(listE1);
+                    activePlayer.action(currentTarget); // if the current player is a hero, attacks a monster
+
+
+                    //System.out.println(activePlayer.getName() +" hit " + getLowHP(listE1).getName());
+                    updateDeadList(currentTarget, listE1); // update ennemy alives list
+                } else { // monster attacking
+                    Player currentTarget = getTarget(listA); // find a target among allies
+                    activePlayer.action(playerList.get(currentTarget.getName()));
+
+
+                    //System.out.println(activePlayer.getName() +" hit " + target);
+                    updateDeadList(currentTarget, listA); // update allies alive list
+                }
+
+            /*System.out.println("------------------------------------- \n" +
+                    "-------------------------------------"
+            );*/
+            }
         }
 
         long endTime = System.nanoTime();
@@ -58,10 +97,10 @@ public class Game {
         long timeElapsed = endTime - startTime;
         System.out.println("Execution time in nanoseconds  : " + timeElapsed);
         System.out.println("Execution time in milliseconds : " + timeElapsed / 1000000);
-
+        /*
         System.out.println(damageDealt(3348,1,1,0,233578*0.028,0.95,0,0.3,
                 3.11,1,1.1,1940,0,0,0,0));
-
+        */
     }
 
     private static void updateDeadList(Player currentTarget, ArrayList<String> listE1) {
@@ -89,44 +128,47 @@ public class Game {
 
         double jumpCRbar = tickValue; // compteur inverse de tick commençant à tickValue, et diminue vers 0. Saute de joueur de joueur
 
-            // display CR
-            // We store key = CR and value = String name so it's sorted ; easy to display
-            TreeMap<Double,String> displayCRForPlayers = new TreeMap<>(Collections.reverseOrder()); // DESC order of CR
+        // display CR
+        // We store key = CR and value = String name so it's sorted ; easy to display
+        TreeMap<Double,String> displayCRForPlayers = new TreeMap<>(Collections.reverseOrder()); // DESC order of CR displayed
 
-            playerList.forEach((key, value) -> displayCRForPlayers.put(value.getCRinPercentage(),key));
+        playerList.forEach((key, value) -> displayCRForPlayers.put(value.getCRinPercentage(),key));
 
-            activePlayer = playerList.get(displayCRForPlayers.firstEntry().getValue()); // set activePlayer as the one having 100% CR via his name
-            //System.out.println(displayCRForPlayers.firstEntry().getValue() + "'s turn !");
-            playerList.get(displayCRForPlayers.firstEntry().getValue()).setCRinPercentage(0); // reset CR bar of the active player
+        activePlayer = playerList.get(displayCRForPlayers.firstEntry().getValue()); // set activePlayer as the one having 100% CR via his name
+        //System.out.println(displayCRForPlayers.firstEntry().getValue() + "'s turn !");
+        playerList.get(displayCRForPlayers.firstEntry().getValue()).setCRinPercentage(0); // reset CR bar of the active player
 
-            // Iterate over TreeMap to display CR
-            /*
-            Set set = displayCRForPlayers.entrySet();
-            for (Object o : set) {
-                Map.Entry me = (Map.Entry) o;
-                System.out.println( me.getValue() + " has a CR of : " + String.format("%.2f", me.getKey()) +"%");
-            }*/
+        // Iterate over TreeMap to display CR
+        /*
+        Set set = displayCRForPlayers.entrySet();
+        for (Object o : set) {
+            Map.Entry me = (Map.Entry) o;
+            System.out.println( me.getValue() + " has a CR of : " + String.format("%.2f", me.getKey()) +"%");
+        }*/
 
-            // Prepare the the value of the next step
+
+        if (activePlayer.getCRinPercentage() < 100.10) { // update only if there is no unit beyond 100% CR
+            // Prepare the value of the next step
             for (Map.Entry player : playerList.entrySet()) {
                 Player pl = (Player) player.getValue();
                 pl.setNumberOftick((100 - pl.getCRinPercentage()) / (pl.getSpeed() / tickValue)); // nombre de ticks à réaliser pour atteindre 100%
                 if (pl.getNumberOftick() < jumpCRbar) {
                     jumpCRbar = pl.getNumberOftick();
                 }
-        }
+            }
 
-        // Jump to the next step by removing from everyone NumberOfTick value
-        for (Map.Entry player : playerList.entrySet()) { // Sort the list of speeds to get the fastest unit
-            Player pl = (Player) player.getValue();
-            pl.setNumberOftick(pl.getNumberOftick() - jumpCRbar); // actualise la CR bar de tout le monde en décalant tout le monde linéairement
-            // du nombre de tick du joueur qui atteint la barre 0 en premier
-            pl.setCRinPercentage(100 * (1 - pl.getNumberOftick() / (tickValue * 100 / pl.getSpeed()))); // current CR = nb_ticks/total_ticks
-        }
+            // Jump to the next step by removing from everyone NumberOfTick value
+            for (Map.Entry player : playerList.entrySet()) { // Sort the list of speeds to get the fastest unit
+                Player pl = (Player) player.getValue();
+                pl.setNumberOftick(pl.getNumberOftick() - jumpCRbar); // actualise la CR bar de tout le monde en décalant tout le monde linéairement
+                // du nombre de tick du joueur qui atteint la barre 0 en premier
+                pl.setCRinPercentage(100 * (1 - pl.getNumberOftick() / (tickValue * 100 / pl.getSpeed()))); // current CR = nb_ticks/total_ticks
+            }
         /*
         System.out.println("------------------------------------- \n" +
-                "-------------------------------------"
+            "-------------------------------------"
         );*/
+        }
     }
 
     public static void initGame(Map<String,Player> playerList) {
@@ -136,10 +178,10 @@ public class Game {
         Player p3 = new Hero("Chloe", 208, true, 2347, 660, 7189, 40, 233, 66, 59, 5);
         Player p4 = new Hero("SSB", 201, true, 2622, 871, 10186, 83, 260, 96, 14, 5);
         // Monster
-        Player p5 = new Monster("Naga1", 154, true, 2222, 1340, 13358, 50, 150, 50, 45, 5); // LES 2 DEUX NAGA DOIVENT AVOIR DEUX SPEED DIFFÉRENTES
-        Player p6 = new Monster("Naga2", 155, true, 2222, 1340, 13358, 50, 150, 50, 45, 5);
-        Player p7 = new Monster("Dragona", 175, true, 3333, 1392, 20241, 50, 150, 50, 65, 5);
-
+        Player p5 = new Monster("Naga1", 154, true, 6113, 1340, 13358, 50, 150, 0, 0, 5);
+        Player p6 = new Monster("Naga2", 154, true, 6113, 1340, 13358, 50, 150, 0, 0, 5);
+        Player p7 = new Monster("Dragona", 175, true, 3234, 1392, 20241, 50, 150, 0, 0, 5);
+        Player p8 = new Monster("Wyvern",242,true,6835,1940,233578,50,150,0,80,5);
         // Add heroes on data
         playerList.put(p1.getName(), p1); // p1 is the front
         front = p1;
@@ -162,6 +204,9 @@ public class Game {
         playerList.put(p7.getName(), p7);
         listE1.add(p7.getName());
         //perNames.put( 100.00,"Dragona");
+
+        //skillsCooldown.put(p1.getName(),new int[]{ 0,3,0,5 });
+        //skillsCooldown.put(p2.getName(),new)
 
         //speedRNG(playerList); // applique la speed RNG
         setCRBar(playerList); // permet de setup les variables CR/% pour chaque personnage
@@ -256,6 +301,8 @@ public class Game {
         return atkMods*DmgMods*OtherMods*DamageMitigation/DefenseMod;
     }
 
+    // naga skill 2 ratio = 1.3
+    // draguna skill 2 ratio = 1.4
 
 
     //((this.getAtk(skillId)*rate + flatMod)*dmgConst + flatMod2) * pow * skillEnhance * elemAdv * target * dmgMod;

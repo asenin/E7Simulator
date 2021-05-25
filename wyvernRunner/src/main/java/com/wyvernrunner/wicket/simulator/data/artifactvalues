@@ -41,6 +41,55 @@ This file contains the values and descriptions of the different effect fields of
     (20) : Seal
     (21) : Curse boss (Banshee queen's curse, abyss floors)
 
+
+ Buffs : This field contains an array of the buffs that can be applied
+    (2) : Increase Attack
+    (4) : Increase Speed
+    (6) : Increase Defense
+    (8) : Dual Attack
+    (10) : Invincible
+    (12) : Extra Turn
+    (14) : Increase Combat Readiness
+    (16) : Immortal
+    (18) : Barrier
+    (20) : Increase Critical Hit Resistance
+    (22) : Rage
+    (24) : Continuous Heal
+    (26) : Transfer
+    (28) : Dispel
+    (30) : Counterattack
+    (32) : Random Buff
+    (34) : Decrease Skill Cooldown
+    (36) : Stealth
+    (38) : Penetrate
+    (40) : Reflect
+    (42) : Revive
+    (44) : Increase Critical Hit Chance
+    (46) : Debuff Immunity
+    (48) : Loveliness
+    (50) : Idol
+    (52) : Vigor
+    (54) : Cleanse
+    (56) : Skill Nullifier
+    (58) : Evasion
+    (60) : Increase Attack (Greater)
+    (62) : Increase Critical Hit Damage
+    (64) : Guardians Blessing
+    (66) : Detonate
+    (68) : Bubble
+    (70) : Buff Extension
+    (72) : Buff Stealing
+    (74) : Increase Speed (Greater)
+    (76) : Healing
+    (78) : Resurrect
+    (80) : Effect Resistance
+    (82) : Effectiveness
+    (84) : Mind’s Eye
+    (86) : Fury
+    (88) : Daydream
+
+
+
 - DebuffTurns : Duration of debuffs applied
 
 - ScaleMax : Maximum scaling of effect
