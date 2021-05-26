@@ -14,9 +14,6 @@ public class Hero extends Player  {
 
     }
 
-
-
-
     /*
     @Override
     public void action(Player player) {
