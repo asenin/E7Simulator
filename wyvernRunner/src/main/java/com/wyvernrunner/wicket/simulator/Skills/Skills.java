@@ -7,12 +7,14 @@ public class Skills {
     private double enhanceMod;
     private double element;
     private double flatMod;
+    private int maxCD;
 
-    public Skills(double ratio, double pow, double enhanceMod, double element){
+    public Skills(double ratio, double pow, double enhanceMod, double element,int maxCD){
         this.ratio = ratio;
         this.pow = pow;
         this.enhanceMod = enhanceMod;
         this.element = element;
+        this.maxCD = maxCD;
 
     }
 
@@ -32,5 +34,7 @@ public class Skills {
     public double getElement() {
         return this.element;
     }
+
+    public int getMaxCD() { return this.maxCD; }
 
 }

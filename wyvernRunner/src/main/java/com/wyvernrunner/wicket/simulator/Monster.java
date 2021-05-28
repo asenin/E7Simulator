@@ -3,8 +3,8 @@ package com.wyvernrunner.wicket.simulator;
 public class Monster extends Player {
 
 
-    public Monster(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual) {
-        super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual);
+    public Monster(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual,int element) {
+        super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual,element);
     }
 
     /*

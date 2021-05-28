@@ -32,7 +32,9 @@ public abstract class Player {
     private int eff;
     private int effres;
     private int dual;
-    private boolean front;
+    private int element;
+    private double shield;
+
 
     ////////////////////////////
 
@@ -43,7 +45,7 @@ public abstract class Player {
     ////////////////////////////
 
 
-    public Player(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual) {
+    public Player(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual,int element) {
         this.speed = speed;
         this.name = name;
         this.alive = alive;
@@ -55,6 +57,8 @@ public abstract class Player {
         this.eff = eff;
         this.effres = effres;
         this.dual = dual;
+        this.element = element;
+        this.shield= 0;
         buffList.replaceAll((k,v)->v=0); // reset all buffs
         debuffList.replaceAll((k,v)->v=0); // reset all debuffs
     }
@@ -185,8 +189,12 @@ public abstract class Player {
         this.dual = dual;
     }
 
-    public boolean getFront(){
-        return front;
+    public int getElement(){
+        return this.element;
     }
+
+    public double getShield() { return this.shield; }
+
+    public void setShield(double shield) { this.shield = shield; }
 
 }

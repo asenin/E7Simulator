@@ -1,5 +1,6 @@
 package com.wyvernrunner.wicket.simulator;
 
+import com.wyvernrunner.wicket.simulator.Heroes.Luluca;
 import com.wyvernrunner.wicket.simulator.Monsters_W13.Dragona;
 import com.wyvernrunner.wicket.simulator.Monsters_W13.Wyvern;
 import com.wyvernrunner.wicket.simulator.Skills.Skills;
@@ -8,8 +9,11 @@ import com.wyvernrunner.wicket.simulator.Skills.off_aoe_damage;
 import com.wyvernrunner.wicket.simulator.Skills.off_mono_damage;
 import com.wyvernrunner.wicket.simulator.TempEffects.Buff;
 import com.wyvernrunner.wicket.simulator.TempEffects.Debuff;
+import com.wyvernrunner.wicket.simulator.TempEffects.DecreaseDefense;
+import com.wyvernrunner.wicket.simulator.TempEffects.TempEffect;
 
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 
@@ -29,13 +33,23 @@ public class Game {
     public static Map<String,Integer> skills3Cooldown = new HashMap<String, Integer>(); // store CD for each unit's skill 3
     public static Map<String,Integer> skills2tracker = new HashMap<>(); // store real time cooldown on skill 2
     public static Map<String,Integer> skills3tracker = new HashMap<>(); // store real time cooldown on skill 3
+    public static Map<String,Skills> skills1Stored = new HashMap<>(); // store the list of skill 1 : key = name, value = Skill
     public static Map<String,Skills> skills2Stored = new HashMap<>(); // store the list of skill 2: key = name, value = Skill
     public static Map<String,Skills> skills3Stored = new HashMap<>(); // store the list of skill 3 : key = name, value = Skill
 
-    public static Map<String, Debuff> HeroDebuffs = new HashMap<>();
-    public static Map<String,Debuff> MonsterDebuffs = new HashMap<>();
-    public static Map<String, Buff> HeroBuffs = new HashMap<>();
-    public static Map<String, Buff> MonsterBuffs = new HashMap<>();
+
+    public static Map<String, ArrayList<TempEffect>> skills1Debuff = new HashMap<>();
+    public static Map<String, ArrayList<TempEffect>> skills2Debuff = new HashMap<>();
+    public static Map<String, ArrayList<TempEffect>> skills3Debuff = new HashMap<>();
+    public static Map<String, TempEffect> skills1Buff = new HashMap<>();
+    public static Map<String, TempEffect> skills2Buff = new HashMap<>();
+    public static Map<String, TempEffect> skills3Buff = new HashMap<>();
+
+    public static Map<String,ArrayList<TempEffect>> Debuffstracker = new HashMap<>();
+    public static Map<String,ArrayList<TempEffect>> Buffstracker = new HashMap<>();
+
+
+
 
 
 
@@ -103,62 +117,121 @@ public class Game {
                 // Get the active player
                 // Todo : Coder les actions
 
-                if (activePlayer instanceof Hero) { // hero attacking
-                    Player currentTarget = getLowHP(listE1); // define a target among all ennemies
 
-                    switch (chooseSkill(activePlayer)){
-                        case 1 : // use skill 1
-                            activePlayer.action(currentTarget); // if the current player is a hero, attacks a monster
-                            break;
-                        case 2 : // use skill 2
-                            skills2tracker.put(activePlayer.getName(),skills2Cooldown.get(activePlayer.getName())); // reset the CD of the S2
-                            Skills skill = skills2Stored.get(activePlayer.getName());
-                            if (skill instanceof off_aoe_damage) { // OFF AOE
-                                /*
-                                for (String player : listE1){
-                                    playerList.get(player).setHealth(playerList.get(player).getHealth()-damageDealt(activePlayer.getAttack(),0,skills2Stored.get(player).getRatio(),
+                updateDebuffsStartTurn(activePlayer);
 
-                                    ));
-                                }*/
-                            } else if (skill instanceof off_mono_damage) {
-
-                            } else if (skill instanceof def_aoe_shield) {
-
-                            }
-
-
-                            break;
-                        case 3 : // use skill 3
-                            skills3tracker.put(activePlayer.getName(),skills3Cooldown.get(activePlayer.getName())); // reset the CD of the S3
-
-                            break;
-
-                    }
-                    //System.out.println(activePlayer.getName() +" hit " + getLowHP(listE1).getName());
-                    updateDeadList(currentTarget, listE1); // update ennemy alives list
-
-                } else { // monster attacking
-                    Player currentTarget = getTarget(listA); // find a target among allies
-
-                    switch (chooseSkill(activePlayer)){
-                        case 1 :
-
-
-
-
-                            activePlayer.action(currentTarget); // if the current player is a hero, attacks a monster
-                            break;
-                        case 2 :
-
-                            break;
-
-                    }
-
-                    activePlayer.action(playerList.get(currentTarget.getName()));
-
-                    //System.out.println(activePlayer.getName() +" hit " + target);
-                    updateDeadList(currentTarget, listA); // update allies alive list
+                if(activePlayer instanceof Hero){ // check if active player is dead, and do the updates everywhere when it's the case
+                    updateDeadList(activePlayer,listA);
+                } else {
+                    updateDeadList(activePlayer,listE1);
                 }
+
+                if (activePlayer.getAlive()) { // if he is alive after the debuffs applied on him (poison, burn, etc...)
+                    if (activePlayer instanceof Hero) { // hero attacking
+
+                        Player currentTarget = getLowHP(listE1); // define a target among all ennemies
+
+                        switch (chooseSkill(activePlayer)){
+                            case 1 : // use skill 1
+                                applyDamage(currentTarget,damageDealt(activePlayer.getAttack(),
+                                                getBuffs(activePlayer),
+                                                getSkillRate(activePlayer,1),
+                                                getFlatMod(activePlayer,1),
+                                                getFlat2Mod(activePlayer,currentTarget),
+                                                getpow(activePlayer,1),
+                                                getSkillEnhanceMod(activePlayer,1),
+                                                getextMod(activePlayer,currentTarget,1),
+                                                getHitTypeMod(activePlayer,currentTarget),
+                                                getTargetDebuff(currentTarget),
+                                                getElementalMod(activePlayer,1),
+                                                currentTarget.getDefense(),
+                                                getDefbreakMod(currentTarget),
+                                        0.0,0.0,0.0
+                                ));
+                                break;
+                            case 2 : // use skill 2
+                                skills2tracker.put(activePlayer.getName(),skills2Cooldown.get(activePlayer.getName())); // reset the CD of the S2
+                                Skills skill = skills2Stored.get(activePlayer.getName());
+                                if (skill instanceof off_aoe_damage) { // OFF AOE
+                                    for (String player : listE1){ // attack each enemy
+                                        applyDamage(playerList.get(player),damageDealt(activePlayer.getAttack(),
+                                                getBuffs(activePlayer),
+                                                getSkillRate(activePlayer,1),
+                                                getFlatMod(activePlayer,1),
+                                                getFlat2Mod(activePlayer,playerList.get(player)),
+                                                getpow(activePlayer,1),
+                                                getSkillEnhanceMod(activePlayer,1),
+                                                getextMod(activePlayer,playerList.get(player),1),
+                                                getHitTypeMod(activePlayer,playerList.get(player)),
+                                                getTargetDebuff(playerList.get(player)),
+                                                getElementalMod(activePlayer,1),
+                                                playerList.get(player).getDefense(),
+                                                getDefbreakMod(playerList.get(player)),
+                                                0.0,0.0,0.0
+                                        ));
+                                    }
+                                } else if (skill instanceof off_mono_damage) {
+                                    applyDamage(currentTarget,damageDealt(activePlayer.getAttack(),
+                                            getBuffs(activePlayer),
+                                            getSkillRate(activePlayer,2),
+                                            getFlatMod(activePlayer,2),
+                                            getFlat2Mod(activePlayer,currentTarget),
+                                            getpow(activePlayer,2),
+                                            getSkillEnhanceMod(activePlayer,2),
+                                            getextMod(activePlayer,currentTarget,2),
+                                            getHitTypeMod(activePlayer,currentTarget),
+                                            getTargetDebuff(currentTarget),
+                                            getElementalMod(activePlayer,2),
+                                            currentTarget.getDefense(),
+                                            getDefbreakMod(currentTarget),
+                                            0.0,0.0,0.0
+                                    ));
+                                } else if (skill instanceof def_aoe_shield) {
+                                    switch (activePlayer.getName()){
+                                        case "Luluca" : // Luluca S2
+                                            for (String player : listA) { // attack each enemy
+                                                playerList.get(player).setShield(playerList.get(player).getShield() + 0.375*activePlayer.getAttack());
+                                            }
+                                    }
+
+                                }
+
+
+                                break;
+                            case 3 : // use skill 3
+                                skills3tracker.put(activePlayer.getName(),skills3Cooldown.get(activePlayer.getName())); // reset the CD of the S3
+
+                                break;
+
+                        }
+                        //System.out.println(activePlayer.getName() +" hit " + getLowHP(listE1).getName());
+                        updateDeadList(currentTarget, listE1); // update ennemy alives list
+
+                    } else { // monster attacking
+                        Player currentTarget = getTarget(listA); // find a target among allies
+
+                        switch (chooseSkill(activePlayer)){
+                            case 1 :
+
+
+
+
+                                activePlayer.action(currentTarget); // if the current player is a hero, attacks a monster
+                                break;
+                            case 2 :
+
+                                break;
+
+                        }
+
+                        activePlayer.action(playerList.get(currentTarget.getName()));
+
+                        //System.out.println(activePlayer.getName() +" hit " + target);
+                        updateDeadList(currentTarget, listA); // update allies alive list
+                    }
+                }
+
+
             }
         }
 
@@ -169,7 +242,7 @@ public class Game {
         System.out.println("Execution time in nanoseconds  : " + timeElapsed);
         System.out.println("Execution time in milliseconds : " + timeElapsed / 1000000);
 
-        System.out.println(damageDealt(3000,0,1,0,0,1,0,0.3+(0.005*50),
+        System.out.println(damageDealt(2500,0,1,0,0,1,0,0.3+0.1,
                 2.50,0,1.1,1940,0,0,0,0));
 
     }
@@ -179,7 +252,7 @@ public class Game {
             for (Iterator<String> iterator = listE1.iterator(); iterator.hasNext();) {
                 String deadName = iterator.next();
                 if (deadName.equals(currentTarget.getName())){
-                    playerList.get(currentTarget.getName()).setAlive(false); // considers dead // USELESS?
+                    playerList.get(currentTarget.getName()).setAlive(false); // considers dead /
                     System.out.println(deadName +" is dead ");
                     iterator.remove(); // remove the monster from listE1
                     /*
@@ -238,28 +311,90 @@ public class Game {
         }
     }
 
+    public static void updateDebuffsStartTurn(Player pl) {
+        Iterator<TempEffect> i =  Debuffstracker.get(pl.getName()).iterator();
+        while (i.hasNext()){
+            TempEffect effect = i.next();
+            switch (effect.getType()){
+                case 11: // burn
+                    pl.setHealth(pl.getHealth()-effect.getCaster().getAttack()*0.6*1.871/((1-0.7)/pl.getDefense()/300+1));
+                    effect.setDuration(effect.getDuration()-1);
+                    //effect.getTarget().setHealth(effect.getTarget().getHealth()-effect.getCaster().getAttack()*0.6*1.871/((1-0.7)/effect.getTarget().getDefense()/300+1)); // same instructions
+                    if (effect.getDuration() == 0){ // remove the debuff when it's over
+                        i.remove();
+                    }
+                    break;
+                case 13 : // bleed
+                    pl.setHealth(pl.getHealth()-effect.getCaster().getAttack()*0.3*1.871/((1-0.7)/pl.getDefense()/300+1));
+                    effect.setDuration(effect.getDuration()-1);
+                    if (effect.getDuration() == 0){ // remove the debuff when it's over
+                        i.remove();
+                    }
+                    break;
+                case 19 : // poison
+                    pl.setHealth(pl.getHealth() - 0.05*pl.getMaxhp());
+                    effect.setDuration(effect.getDuration()-1);
+                    if (effect.getDuration() == 0){ // remove the debuff when it's over
+                        i.remove();
+                    }
+                    break;
+            }
+        }
+
+    }
+
+
     public static void initSkills(Map<String,Player> playerList){
         for (Map.Entry player : playerList.entrySet()) {
             Player pl = (Player) player.getValue();
             switch (pl.getName()){
                 case "Luluca":
-                    Skills Luluca_S2 = new def_aoe_shield(1,1,1,1);
+                    // Skills //
+                    Skills Luluca_S1 = new off_mono_damage(1,1,0,1.1,0);
+                    skills1Stored.put(pl.getName(),Luluca_S1);
+                    Skills Luluca_S2 = new def_aoe_shield(1,1,1,1,4);
                     skills2Stored.put(pl.getName(),Luluca_S2);
-                    Skills Luluca_S3 = new off_aoe_damage(0.9,1.05,0,1.1);
+                    Skills Luluca_S3 = new off_aoe_damage(0.9,1.05,0,1.1,5);
                     skills3Stored.put(pl.getName(),Luluca_S3);
+
+                    // Debuffs //
+                    ArrayList<TempEffect> Luluca_S1_Debuff_List = new ArrayList<>();
+                    TempEffect Luluca_S1_DecreaseDefense= new DecreaseDefense(2,0.5);
+                    Luluca_S1_Debuff_List.add(Luluca_S1_DecreaseDefense);
+                    skills1Debuff.put(pl.getName(),Luluca_S1_Debuff_List);
+
+                    ArrayList<TempEffect> Luluca_S3_Debuff_List = new ArrayList<>();
+                    TempEffect Luluca_S3_DecreaseDefense = new DecreaseDefense(2,0.6);
+                    Luluca_S3_Debuff_List.add(Luluca_S3_DecreaseDefense);
+                    skills3Debuff.put(pl.getName(),Luluca_S3_Debuff_List);
+
                     break;
                 case "Alexa" :
-                    Skills Alexa_S2 = new off_mono_damage(1,1,0.3,1.1);
+                    Skills Alexa_S1 = new off_mono_damage(1,1,0,1.1,0);
+                    skills1Stored.put(pl.getName(),Alexa_S1);
+                    Skills Alexa_S2 = new off_mono_damage(1,1,0.3,1.1,3);
                     skills2Stored.put(pl.getName(),Alexa_S2);
-                    Skills Alexa_S3 = new off_mono_damage(1.5,0.9,0.1,1.1);
+                    Skills Alexa_S3 = new off_mono_damage(1.5,0.9,0.1,1.1,5);
                     skills3Stored.put(pl.getName(),Alexa_S3);
+
+                    // Debuffs //
+                    ArrayList<TempEffect> Alexa_S2_Debuff_List = new ArrayList<>();
+                    TempEffect Alexa_S2_Poison_1 = new DecreaseDefense(2,1);
+                    TempEffect Alexa_S2_Poison_2 = new DecreaseDefense(2,1);
+                    Alexa_S2_Debuff_List.add(Alexa_S2_Poison_1);
+                    Alexa_S2_Debuff_List.add(Alexa_S2_Poison_2);
+                    skills2Debuff.put(pl.getName(),Alexa_S2_Debuff_List);
                     break;
                 case "SeasideBellona" :
-                    Skills SeasideBellona_S3 = new off_aoe_damage(1,1,0.3,1.1);
+                    Skills SeasideBellona_S1 = new off_aoe_damage(1,1,0,1.1,0);
+                    skills1Stored.put(pl.getName(),SeasideBellona_S1);
+                    Skills SeasideBellona_S3 = new off_aoe_damage(1,1,0.3,1.1,4);
                     skills3Stored.put(pl.getName(),SeasideBellona_S3);
                     break;
                 case "GeneralPurrgis" :
-                    Skills GeneralPurrgis_S3 = new off_aoe_damage(0.8,1,0.3,1);
+                    Skills GeneralPurrgis_S1 = new off_aoe_damage(0.8,1,0.3,1,0);
+                    skills1Stored.put(pl.getName(),GeneralPurrgis_S1);
+                    Skills GeneralPurrgis_S3 = new off_aoe_damage(0.8,1,0.3,1,5);
                     skills3Stored.put(pl.getName(),GeneralPurrgis_S3);
                     break;
             }
@@ -270,17 +405,17 @@ public class Game {
 
     public static void initGame(Map<String,Player> playerList) {
         // Hero
-        Player p1 = new Hero("GeneralPurrgis", 152, true, 1365, 1727, 23275, 37, 162, 12, 106, 5);
-        Player p2 = new Hero("Alexa", 116, true, 2690, 812, 7400, 89, 306, 82, 9, 5);
-        Player p3 = new Hero("Luluca", 204, true, 1786, 1056, 6237, 64, 277, 88, 14, 13);
-        Player p4 = new Hero("SeasideBellona", 126, true, 3426, 1126, 13839, 94, 308, 63, 0, 5);
+        Player p1 = new Hero("GeneralPurrgis", 152, true, 1365, 1727, 23275, 37, 162, 12, 106, 5,5);
+        Player p2 = new Hero("Alexa", 116, true, 2690, 812, 7400, 89, 306, 82, 9, 5,1);
+        Player p3 = new Hero("Luluca", 204, true, 1786, 1056, 6237, 64, 277, 88, 14, 13,1);
+        Player p4 = new Hero("SeasideBellona", 126, true, 3426, 1126, 13839, 94, 308, 63, 0, 5,1);
 
 
         // Monster
-        Player p5 = new Monster("Naga1", 154, true, 6113, 1340, 13358, 50, 150, 0, 0, 5);
-        Player p6 = new Monster("Naga2", 154, true, 6113, 1340, 13358, 50, 150, 0, 0, 5);
-        Player p7 = new Dragona("Dragona", 175, true, 3234, 1392, 20241, 50, 150, 0, 0, 5);
-        Player p8 = new Wyvern("Wyvern",242,true,6835,1940,233578,50,150,0,80,5);
+        Player p5 = new Monster("Naga1", 154, true, 6113, 1340, 13358, 50, 150, 0, 0, 5,2);
+        Player p6 = new Monster("Naga2", 154, true, 6113, 1340, 13358, 50, 150, 0, 0, 5,2);
+        Player p7 = new Monster("Dragona", 175, true, 3234, 1392, 20241, 50, 150, 0, 0, 5,2);
+        Player p8 = new Monster("Wyvern",242,true,6835,1940,233578,50,150,0,80,5,2);
 
 
         // Add heroes on data
@@ -406,19 +541,20 @@ public class Game {
     public static Map<String,Double> prepareDamage(Player activePlayer, Player target, ArrayList<String> listA,ArrayList<String> listE1,int skill){
         Map<String,Double> result = new HashMap<String,Double>() ;
         result.put("Attack",activePlayer.getAttack());
-        //result.put("Atkmod",;  // buffs
+        result.put("Atkmod",getBuffs(activePlayer));  // buffs
         result.put("SkillRate",getSkillRate(activePlayer,skill)); // stored
-        //result.put("FlatMod",flatMod;  // dépend S1/S2/S3 +
-        //result.put("FlatMod2,);      // dépend artéfact et cible
+        result.put("FlatMod",getFlatMod(activePlayer,skill));  // dépend S1/S2/S3 +
+        result.put("Flat2Mod",getFlat2Mod(activePlayer,target));      // dépend artéfact et cible
         result.put("pow",getpow(activePlayer,skill)); // stored
         result.put("SkillEnhanceMods",getSkillEnhanceMod(activePlayer,skill));  // stored
         result.put("extMods", getextMod(activePlayer,target,skill));
-        //result.put("HitTypeMod",);  // dépend coup critique ou non
-        //result.put("Target",);) // TODO  // debuffs
+        result.put("HitTypeMod",getHitTypeMod(activePlayer,target));  // dépend coup critique ou non
+        result.put("Target",getTargetDebuff(target));
         result.put("ElementalMod",getElementalMod(activePlayer,skill)); // stored
         result.put("Defense",target.getDefense());
-        //result.put("DefbreakMod",); // TODO  // dépend debuff
+        result.put("DefbreakMod",getDefbreakMod(target));
         //result.put("PenMod", ); // TODO Kise case
+        result.put("PenMod",0.0);
         result.put("DamageReduction", 0.0);
         result.put("DamageSharing", 0.0);
 
@@ -435,15 +571,22 @@ public class Game {
         return atkMods*DmgMods*OtherMods*DamageMitigation/DefenseMod;
     }
 
+    public static void applyDamage(Player player, double damageReceived){
+        double damage = player.getShield() - damageReceived;
+        if (damage > 0){
+            player.setShield(player.getShield() - damageReceived);
+        } else {
+            player.setShield(0);
+            player.setHealth(player.getHealth()-Math.abs(damage));
+        }
+    }
+
     // naga skill 2 ratio = 1.3
     // draguna skill 2 ratio = 1.4
 
 
     //((this.getAtk(skillId)*rate + flatMod)*dmgConst + flatMod2) * pow * skillEnhance * elemAdv * target * dmgMod;
     // ((1-dmgReduc)*(1-dmgTrans))/(((this.def / 300)*this.getPenetration(skill)) + 1);
-    public static void typeSkill(boolean AOESkill) {
-
-    }
 
     public static int chooseSkill(Player player){
         int choice = skills3Cooldown.get(player.getName());
@@ -455,6 +598,40 @@ public class Game {
             return 2;
         }
         return 1;
+    }
+
+    public static double getBuffs(Player player) { // if atk buff, return 0.3, if not return 0
+        Iterator<TempEffect> i =  Buffstracker.get(player.getName()).iterator();
+        while (i.hasNext()){
+            TempEffect effect = i.next();
+            if (effect.getType()==2){
+                return 0.5;
+            } else if (effect.getType()==60){
+                return 0.7;
+            }
+        }
+        return 0.0;
+    }
+
+    public static double getFlatMod(Player player, int skill){
+        switch (player.getName()){
+            case "GeneralPurrgis":
+                switch (skill){
+                    case 1:
+                        return player.getMaxhp()*0.06;
+                    case 3:
+                        return player.getMaxhp()*0.08;
+                }
+        }
+        return 0.0;
+    }
+
+    public static double getFlat2Mod(Player player, Player target){
+        switch (player.getName()){
+            case "Alexa" :
+                return target.getMaxhp()*0.03;
+        }
+        return 0.0;
     }
 
     public static double getSkillRate(Player player,int skill) { // find the good ratio for the right skill
@@ -497,9 +674,6 @@ public class Game {
         return 1;
     }
 
-
-
-
     public static double getextMod(Player player, Player target,int skill) {
         switch (player.getName()){
             case "Enott" :
@@ -515,7 +689,7 @@ public class Game {
                 }
                 return 0;
             case "Luluca":
-                if (skill ==1){
+                if (skill==1){
                     return 0.02*(100-target.getHealth()*100/target.getMaxhp()); // 20% of missing health in %
                 }
                 break;
@@ -527,5 +701,150 @@ public class Game {
         }
         return 0;
     }
+
+    public static double getTargetDebuff(Player target){
+        Iterator<TempEffect> i =  Debuffstracker.get(target.getName()).iterator();
+        while (i.hasNext()){
+            TempEffect effect = i.next();
+            if (effect.getType()==27) { // boost 15% damage
+                return 0.15;
+            }
+        }
+        return 0;
+    }
+
+    public static double getDefbreakMod(Player target){
+        Iterator<TempEffect> i =  Debuffstracker.get(target.getName()).iterator();
+        while (i.hasNext()){
+            TempEffect effect = i.next();
+            if (effect.getType()==3) { // decrease 70% defense
+                return 0.7;
+            }
+        }
+        return 0;
+    }
+
+    public static double getHitTypeMod(Player player, Player target){
+        switch (player.getElement()) {
+            case 1: // water
+                if (target.getElement() == 3) { // earth
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < 50) { // miss hit
+                        return 0.75;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < player.getCc()) { // crit hit
+                            return player.getCdmg();
+                        } else {
+                            randomInt = r.nextInt(100);
+                            if (randomInt < 30) { // strike hit
+                                return 1.3;
+                            } else {
+                                return 1.0;
+                            }
+                        }
+                    }
+                } else { // non earth
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < player.getCc()) { // crit hit
+                        return player.getCdmg();
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+            case 2 : // fire
+                if (target.getElement() == 1) { // water
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < 50) { // miss hit
+                        return 0.75;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < player.getCc()) { // crit hit
+                            return player.getCdmg();
+                        } else {
+                            randomInt = r.nextInt(100);
+                            if (randomInt < 30) { // strike hit
+                                return 1.3;
+                            } else {
+                                return 1.0;
+                            }
+                        }
+                    }
+                } else { // non water
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < player.getCc()) { // crit hit
+                        return player.getCdmg();
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+            case 3 : // earth
+                if (target.getElement() == 2) { // fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < 50) { // miss hit
+                        return 0.75;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < player.getCc()) { // crit hit
+                            return player.getCdmg();
+                        } else {
+                            randomInt = r.nextInt(100);
+                            if (randomInt < 30) { // strike hit
+                                return 1.3;
+                            } else {
+                                return 1.0;
+                            }
+                        }
+                    }
+                } else { // non water
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < player.getCc()) { // crit hit
+                        return player.getCdmg();
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+            default : // dark or light
+                Random r = new Random();
+                int randomInt = r.nextInt(100);
+                if (randomInt < player.getCc()) { // crit hit
+                    return player.getCdmg();
+                } else {
+                    randomInt = r.nextInt(100);
+                    if (randomInt < 30) { // strike hit
+                        return 1.3;
+                    } else {
+                        return 1.0;
+                    }
+                }
+        }
+    }
+
+    /*
+    public static double getPenMod(Player player,int skill) {
+        if (player.getName().equals("Kise") && skill==2){
+
+    }*/
 
 }

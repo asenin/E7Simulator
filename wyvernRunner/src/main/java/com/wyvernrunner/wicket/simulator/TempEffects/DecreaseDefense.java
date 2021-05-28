@@ -4,11 +4,20 @@ import com.wyvernrunner.wicket.simulator.Player;
 
 public class DecreaseDefense extends Debuff implements EffectsInterface{
 
-    private final double type = 3;
     private int duration;
+    private double rate;
 
-    public DecreaseDefense(int dur) {
-        duration = dur;
+    public DecreaseDefense(int duration,double rate) {
+        this.duration = duration;
+        this.rate = rate;
+    }
+
+    public int getType(){
+        int type = 3;
+        return type;
+    }
+    public int getDuration(){
+        return this.duration;
     }
 
     public void applyEffects(Player target){

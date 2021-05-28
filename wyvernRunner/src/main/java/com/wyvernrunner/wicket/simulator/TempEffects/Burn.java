@@ -4,7 +4,7 @@ import com.wyvernrunner.wicket.simulator.Player;
 
 public class Burn extends Debuff {
 
-    private final double type = 1;
+    private final int type = 1;
     private int duration;
 
     public Burn(int dur) {

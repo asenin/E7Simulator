@@ -3,7 +3,7 @@ package com.wyvernrunner.wicket.simulator.TempEffects;
 import com.wyvernrunner.wicket.simulator.Player;
 
 public class Bleed {
-    private final double type = 1;
+    private final int type = 1;
     private int duration;
 
     public Bleed(int dur) {

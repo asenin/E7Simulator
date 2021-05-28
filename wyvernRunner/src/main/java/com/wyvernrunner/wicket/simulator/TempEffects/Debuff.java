@@ -1,5 +1,8 @@
 package com.wyvernrunner.wicket.simulator.TempEffects;
 
-public abstract class Debuff extends TempEffect{
+public class Debuff extends TempEffect{
+
+
+    private int type;
 
 }
