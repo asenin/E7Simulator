@@ -1,19 +1,12 @@
 package com.wyvernrunner.wicket.simulator;
 
-import com.wyvernrunner.wicket.simulator.Heroes.Luluca;
-import com.wyvernrunner.wicket.simulator.Monsters_W13.Dragona;
-import com.wyvernrunner.wicket.simulator.Monsters_W13.Wyvern;
 import com.wyvernrunner.wicket.simulator.Skills.Skills;
 import com.wyvernrunner.wicket.simulator.Skills.def_aoe_shield;
 import com.wyvernrunner.wicket.simulator.Skills.off_aoe_damage;
 import com.wyvernrunner.wicket.simulator.Skills.off_mono_damage;
-import com.wyvernrunner.wicket.simulator.TempEffects.Buff;
-import com.wyvernrunner.wicket.simulator.TempEffects.Debuff;
-import com.wyvernrunner.wicket.simulator.TempEffects.DecreaseDefense;
-import com.wyvernrunner.wicket.simulator.TempEffects.TempEffect;
+import com.wyvernrunner.wicket.simulator.TempEffects.*;
 
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 
@@ -75,35 +68,207 @@ public class Game {
                 // Todo : Coder les actions
 
 
-                if (activePlayer instanceof Hero) { // hero attacking
-                    Player currentTarget = getLowHP(listE1);
-                    activePlayer.action(currentTarget); // if the current player is a hero, attacks a monster
 
 
-                    //System.out.println(activePlayer.getName() +" hit " + getLowHP(listE1).getName());
-                    updateDeadList(currentTarget, listE1); // update ennemy alives list
-                } else { // monster attacking
-                    Player currentTarget = getTarget(listA); // find a target among allies
-                    activePlayer.action(playerList.get(currentTarget.getName()));
-                    if (currentTarget.getName().equals("GeneralPurrgis")) {
-                        if (playerList.get(currentTarget.getName()).getAlive()) { // if he is alive = true
-                            for (Map.Entry player : playerList.entrySet()) { // Sort the list of speeds to get the fastest unit
-                                Player pl = (Player) player.getValue();
-                                pl.setNumberOftick(Math.max(0, pl.getNumberOftick() - 0.18*tickValue)); // actualise la CR bar de tout le monde en décalant tout le monde
-                                // avec le push de GPurrgis
-                                pl.setCRinPercentage(100 * (1 - pl.getNumberOftick() / (tickValue * 100 / pl.getSpeed()))); // current CR = nb_ticks/total_ticks
-                            }
-                        }
-                    }
-
-
-                    //System.out.println(activePlayer.getName() +" hit " + target);
-                    updateDeadList(currentTarget, listA); // update allies alive list
+                updateDebuffsStartTurn(activePlayer);
+                if(activePlayer instanceof Hero){ // check if active player is dead, and do the updates everywhere when it's the case
+                    updateDeadList(activePlayer,listA);
+                } else {
+                    updateDeadList(activePlayer,listE1);
                 }
 
-            /*System.out.println("------------------------------------- \n" +
-                    "-------------------------------------"
-            );*/
+
+
+
+                if (activePlayer.getAlive()) { // if he is alive after the debuffs applied on him (poison, burn, etc...)
+                    if (activePlayer instanceof Hero) { // hero attacking
+                        Player currentTarget = getLowHP(listE1);
+                        activePlayer.action(currentTarget); // if the current player is a hero, attacks a monster
+
+
+
+                        Iterator<TempEffect> i =  Debuffstracker.get(activePlayer.getName()).iterator();
+                        switch (chooseSkill(activePlayer)){ // skill
+                            case 1 : // skill 1
+                                switch (activePlayer.getName()){
+                                    case "Luluca":
+                                        applyDamage(currentTarget,damageDealt(activePlayer.getAttack(),
+                                                getBuffs(activePlayer),
+                                                getSkillRate(activePlayer,1),
+                                                getFlatMod(activePlayer,1),
+                                                getFlat2Mod(activePlayer,currentTarget),
+                                                getpow(activePlayer,1),
+                                                getSkillEnhanceMod(activePlayer,1),
+                                                getextMod(activePlayer,currentTarget,1),
+                                                getHitTypeMod(activePlayer,currentTarget),
+                                                getTargetDebuff(currentTarget),
+                                                getElementalMod(activePlayer,1),
+                                                currentTarget.getDefense(),
+                                                getDefbreakMod(currentTarget),
+                                                0.0,0.0,0.0
+                                        ));
+
+
+                                        while (i.hasNext()) { // list of active player debuff on skill 1
+                                            TempEffect effect = i.next();
+                                            Random r = new Random();
+                                            int randomInt = r.nextInt(100);
+                                            if (randomInt < effect.getRate()*100){
+                                                randomInt = r.nextInt(100);
+                                                if (randomInt < 85){ // test 85%
+                                                    Iterator<TempEffect> j =  Debuffstracker.get(currentTarget.getName()).iterator();
+                                                    while (j.hasNext()) { // check among all target debuff if it exists
+                                                        TempEffect effectTarget = i.next();
+                                                        if (effectTarget.getType()==3){ // def decrease
+                                                            effectTarget.setDuration(2);
+                                                            break;
+                                                        }
+                                                    }
+                                                    Debuffstracker.get(currentTarget.getName()).add(effect);
+                                                    effect.applyEffects(activePlayer,currentTarget);
+                                                }
+                                            }
+                                        }
+                                    case "Alexa" :
+                                        double secondAttack = getHitTypeMod(activePlayer,currentTarget);
+                                        applyDamage(currentTarget,damageDealt(activePlayer.getAttack(),
+                                                getBuffs(activePlayer),
+                                                getSkillRate(activePlayer,1),
+                                                getFlatMod(activePlayer,1),
+                                                getFlat2Mod(activePlayer,currentTarget),
+                                                getpow(activePlayer,1),
+                                                getSkillEnhanceMod(activePlayer,1),
+                                                getextMod(activePlayer,currentTarget,1),
+                                                secondAttack,
+                                                getTargetDebuff(currentTarget),
+                                                getElementalMod(activePlayer,1),
+                                                currentTarget.getDefense(),
+                                                getDefbreakMod(currentTarget),
+                                                0.0,0.0,0.0
+                                        ));
+                                        if (secondAttack >= 1.5) { // Alexa second attack
+                                            applyDamage(currentTarget,damageDealt(activePlayer.getAttack(),
+                                                    getBuffs(activePlayer)*0.75,
+                                                    getSkillRate(activePlayer,1),
+                                                    getFlatMod(activePlayer,1),
+                                                    getFlat2Mod(activePlayer,currentTarget),
+                                                    getpow(activePlayer,1),
+                                                    getSkillEnhanceMod(activePlayer,1),
+                                                    getextMod(activePlayer,currentTarget,1),
+                                                    getHitTypeMod(activePlayer,currentTarget),
+                                                    getTargetDebuff(currentTarget),
+                                                    getElementalMod(activePlayer,1),
+                                                    currentTarget.getDefense(),
+                                                    getDefbreakMod(currentTarget),
+                                                    0.0,0.0,0.0
+                                            ));
+                                        }
+
+                                    case "SeasideBellona" :
+                                        applyDamage(currentTarget,damageDealt(activePlayer.getAttack(),
+                                                getBuffs(activePlayer),
+                                                getSkillRate(activePlayer,1),
+                                                getFlatMod(activePlayer,1),
+                                                getFlat2Mod(activePlayer,currentTarget),
+                                                getpow(activePlayer,1),
+                                                getSkillEnhanceMod(activePlayer,1),
+                                                getextMod(activePlayer,currentTarget,1),
+                                                getHitTypeMod(activePlayer,currentTarget),
+                                                getTargetDebuff(currentTarget),
+                                                getElementalMod(activePlayer,1),
+                                                currentTarget.getDefense(),
+                                                getDefbreakMod(currentTarget),
+                                                0.0,0.0,0.0
+                                        ));
+
+                                        while (i.hasNext()) { // list of active player debuff on skill 1
+                                            TempEffect effect = i.next();
+                                            Random r = new Random();
+                                            int randomInt = r.nextInt(100);
+                                            if (randomInt < effect.getRate()*100){
+                                                randomInt = r.nextInt(100);
+                                                if (randomInt < 85){ // test 85%
+                                                    Iterator<TempEffect> j =  Debuffstracker.get(currentTarget.getName()).iterator();
+                                                    while (j.hasNext()) { // check among all target debuff if it exists
+                                                        TempEffect effectTarget = i.next();
+                                                        if (effectTarget.getType()==27){ // target
+                                                            effectTarget.setDuration(2);
+                                                            break;
+                                                        }
+                                                    }
+                                                    Debuffstracker.get(currentTarget.getName()).add(effect);
+                                                }
+                                            }
+                                        }
+
+                                    case "GeneralPurrgis" :
+                                        applyDamage(currentTarget,damageDealt(activePlayer.getAttack(),
+                                                getBuffs(activePlayer),
+                                                getSkillRate(activePlayer,1),
+                                                getFlatMod(activePlayer,1),
+                                                getFlat2Mod(activePlayer,currentTarget),
+                                                getpow(activePlayer,1),
+                                                getSkillEnhanceMod(activePlayer,1),
+                                                getextMod(activePlayer,currentTarget,1),
+                                                getHitTypeMod(activePlayer,currentTarget),
+                                                getTargetDebuff(currentTarget),
+                                                getElementalMod(activePlayer,1),
+                                                currentTarget.getDefense(),
+                                                getDefbreakMod(currentTarget),
+                                                0.0,0.0,0.0
+                                        ));
+
+                                        while (i.hasNext()) { // list of active player debuff on skill 1
+                                            TempEffect effect = i.next();
+                                            Random r = new Random();
+                                            int randomInt = r.nextInt(100);
+                                            if (randomInt < effect.getRate()*100){
+                                                randomInt = r.nextInt(100);
+                                                if (randomInt < 85){ // test 85%
+                                                    Iterator<TempEffect> j =  Debuffstracker.get(currentTarget.getName()).iterator();
+                                                    while (j.hasNext()) { // check among all target debuff if it exists
+                                                        TempEffect effectTarget = i.next();
+                                                        if (effectTarget.getType()==27){ // target
+                                                            effectTarget.setDuration(2);
+                                                            break;
+                                                        }
+                                                    }
+                                                    Debuffstracker.get(currentTarget.getName()).add(effect);
+                                                }
+                                            }
+                                        }
+                                }
+
+
+
+
+
+
+                        }
+
+
+                        //System.out.println(activePlayer.getName() +" hit " + getLowHP(listE1).getName());
+                        updateDeadList(currentTarget, listE1); // update ennemy alives list
+                    } else { // monster attacking
+                        Player currentTarget = getTarget(listA); // find a target among allies
+                        activePlayer.action(playerList.get(currentTarget.getName()));
+                        if (currentTarget.getName().equals("GeneralPurrgis")) {
+                            if (playerList.get(currentTarget.getName()).getAlive()) { // if he is alive = true
+                                for (Map.Entry player : playerList.entrySet()) { // Sort the list of speeds to get the fastest unit
+                                    Player pl = (Player) player.getValue();
+                                    pl.setNumberOftick(Math.max(0, pl.getNumberOftick() - 0.18 * tickValue)); // actualise la CR bar de tout le monde en décalant tout le monde
+                                    // avec le push de GPurrgis
+                                    pl.setCRinPercentage(100 * (1 - pl.getNumberOftick() / (tickValue * 100 / pl.getSpeed()))); // current CR = nb_ticks/total_ticks
+                                }
+                            }
+                        }
+
+
+                        //System.out.println(activePlayer.getName() +" hit " + target);
+                        updateDeadList(currentTarget, listA); // update allies alive list
+                    }
+
+                }
             }
         } else {
             while (listE1.size() > 0 && listA.size() > 0) { // WAVE 1 stops whenever one list is empty
@@ -344,7 +509,7 @@ public class Game {
     }
 
 
-    public static void initSkills(Map<String,Player> playerList){
+    public static void initSkills(Map<String,Player> playerList){ // initiate skills and debuffs for every potential unit
         for (Map.Entry player : playerList.entrySet()) {
             Player pl = (Player) player.getValue();
             switch (pl.getName()){
@@ -367,8 +532,8 @@ public class Game {
                     TempEffect Luluca_S3_DecreaseDefense = new DecreaseDefense(2,0.6);
                     Luluca_S3_Debuff_List.add(Luluca_S3_DecreaseDefense);
                     skills3Debuff.put(pl.getName(),Luluca_S3_Debuff_List);
-
                     break;
+
                 case "Alexa" :
                     Skills Alexa_S1 = new off_mono_damage(1,1,0,1.1,0);
                     skills1Stored.put(pl.getName(),Alexa_S1);
@@ -385,18 +550,49 @@ public class Game {
                     Alexa_S2_Debuff_List.add(Alexa_S2_Poison_2);
                     skills2Debuff.put(pl.getName(),Alexa_S2_Debuff_List);
                     break;
+
                 case "SeasideBellona" :
                     Skills SeasideBellona_S1 = new off_aoe_damage(1,1,0,1.1,0);
                     skills1Stored.put(pl.getName(),SeasideBellona_S1);
                     Skills SeasideBellona_S3 = new off_aoe_damage(1,1,0.3,1.1,4);
                     skills3Stored.put(pl.getName(),SeasideBellona_S3);
+
+                    // Debuffs //
+
+                    ArrayList<TempEffect> SeasideBellona_S1_Debuff_List = new ArrayList<>();
+                    TempEffect SeasideBellona_S1_Target = new Target(2,0.75);
+                    SeasideBellona_S1_Debuff_List.add(SeasideBellona_S1_Target);
+                    skills3Debuff.put(pl.getName(),SeasideBellona_S1_Debuff_List);
+
+                    ArrayList<TempEffect> SeasideBellona_S3_Debuff_List = new ArrayList<>();
+                    TempEffect SeasideBellona_S3_Unbuffable = new Unbuffable(2,1);
+                    TempEffect SeasideBellona_S3_Unhealable = new Unhealable(2,1);
+                    SeasideBellona_S3_Debuff_List.add(SeasideBellona_S3_Unbuffable);
+                    SeasideBellona_S3_Debuff_List.add(SeasideBellona_S3_Unhealable);
+                    skills3Debuff.put(pl.getName(),SeasideBellona_S3_Debuff_List);
+
                     break;
+
                 case "GeneralPurrgis" :
                     Skills GeneralPurrgis_S1 = new off_aoe_damage(0.8,1,0.3,1,0);
                     skills1Stored.put(pl.getName(),GeneralPurrgis_S1);
                     Skills GeneralPurrgis_S3 = new off_aoe_damage(0.8,1,0.3,1,5);
                     skills3Stored.put(pl.getName(),GeneralPurrgis_S3);
+
+                    // Debuffs //
+                    ArrayList<TempEffect> GeneralPurrgis_S1_Debuff_List = new ArrayList<>();
+                    TempEffect GeneralPurrgis_S1_Provoke = new Provoke(1,0.8);
+                    GeneralPurrgis_S1_Debuff_List.add(GeneralPurrgis_S1_Provoke);
+                    skills1Debuff.put(pl.getName(),GeneralPurrgis_S1_Debuff_List);
+
+                    ArrayList<TempEffect> GeneralPurrgis_S3_Debuff_List = new ArrayList<>();
+                    TempEffect GeneralPurrgis_S1_Stun = new Stun(1,1);
+                    GeneralPurrgis_S3_Debuff_List.add(GeneralPurrgis_S1_Stun);
+                    skills3Debuff.put(pl.getName(),GeneralPurrgis_S3_Debuff_List);
                     break;
+
+                case "TaranorGuard" :
+                    Skills TaranorGuard_S1 = new off_aoe_damage(0.8,1,0.3,1,0);
             }
 
         }

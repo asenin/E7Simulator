@@ -2,7 +2,7 @@ package com.wyvernrunner.wicket.simulator.TempEffects;
 
 import com.wyvernrunner.wicket.simulator.Player;
 
-public class DecreaseDefense extends Debuff implements EffectsInterface{
+public class DecreaseDefense extends TempEffect {
 
     private int duration;
     private double rate;
@@ -20,15 +20,12 @@ public class DecreaseDefense extends Debuff implements EffectsInterface{
         return this.duration;
     }
 
-    public void applyEffects(Player target){
-        target.setDefense(target.getDefense()*0.5); // reduce def by 50%
+    public void applyEffects(Player caster, Player target){
+        target.setDefense(target.getDefense()*0.3);
     }
 
-    public void updateEffect(int dur){ // update duration only
-        duration = dur;
+    public void resetEffects(Player caster, Player target) {
+        target.setDefense(target.getDefense()/0.3);
     }
 
-    public void resetEffect(Player target){ // reset original stat
-        target.setDefense(target.getDefense()*2);
-    }
 }

@@ -2,30 +2,31 @@ package com.wyvernrunner.wicket.simulator.TempEffects;
 
 import com.wyvernrunner.wicket.simulator.Player;
 
-public class DecreaseAttack extends TempEffect {
+public class Provoke extends TempEffect {
+
 
     private int duration;
     private double rate;
 
-    public DecreaseAttack(int duration,double rate) {
+    public Provoke(int duration, double rate) {
         this.duration = duration;
         this.rate = rate;
     }
 
     public int getType() {
-        int type = 1;
+        int type = 21;
         return type;
     }
-    public int getDuration() {
+
+    public int getDuration(){
         return this.duration;
     }
 
     public void applyEffects(Player caster, Player target){
-        target.setAttack(target.getAttack()*0.5);
+
     }
 
     public void resetEffects(Player caster, Player target) {
-        target.setAttack(target.getAttack()/0.5);
-    }
 
+    }
 }
