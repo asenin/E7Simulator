@@ -1,0 +1,83 @@
+{
+  "alexa" : {
+    "name": "Alexa",
+    "element" : "ice",
+    "class" : "thief",
+    "skills" : {
+      "s1" : {
+        "rate" : 1,
+        "pow" : 1,
+        "enhance" : [[0.05, "DMG"], [0.1, "DMG"], [0.15, "DMG"]],
+        "single" : true,
+        "type" : "attack",
+        "effect" : ["extra_attack"],
+        "extra_attack" : {
+          "rate" : 0.75,
+          "pow" : 1,
+          "single" : true,
+          "attack" : true
+        }
+      },
+      "s2" : {
+        "rate" : 1,
+        "pow" : 1,
+        "enhance" : [[0.05, "DMG"], [0.05, "EFF"], [0.05, "EFF"], [0.1, "DMG"], [0.1, "EFF"], [0.15, "DMG"]],
+        "single" : true,
+        "type" : "attack",
+        "cooldown" : 3,
+        "effect" : ["debuff"],
+        "debuff" : [9],
+        "debuff_amount" : [[9, 2]],
+        "debuff_duration" : 2,
+        "debuff_rate" : 0.8
+      },
+      "s3" : {
+        "rate" : 1.5,
+        "pow" : 0.9,
+        "enhance" : [[0.05, "DMG"], [0.05, "DMG"], [1, "CD"], [0.1, "DMG"], [0.1, "DMG"], [0.1, "DMG"]],
+        "single" : true,
+        "type" : "attack",
+        "cooldown" : 5,
+        "effect" : ["dmg_per_debuff"],
+        "dmg_per_debuff_rate" : 0.15
+      }
+    }
+  },
+  "seaside_bellona" : {
+    "name" : "Seaside_Bellona",
+    "element" : "ice",
+    "class" : "ranger",
+    "skills" : {
+      "s1" : {
+        "rate" : 1,
+        "pow" : 1,
+        "enhance" : [[0.05, "DMG"], [0.05, "EFF"], [0.05, "DMG"], [0.1, "EFF"], [0.1, "DMG"], [0.1, "DMG"]],
+        "single" : true,
+        "type" : "attack",
+        "effect" : ["debuff"],
+        "debuff" : [13],
+        "debuff_amount" : [13, 1],
+        "debuff_duration" : 2,
+        "debuff_rate" : 0.6
+      },
+      "s2" : {
+        "rate" : 0.7,
+        "pow" : 1,
+        "single" : false,
+        "type" : "passive",
+        "effect" : "SSB_passive"
+      },
+      "s3" : {
+        "rate" : 1,
+        "pow" : 1,
+
+      }
+    }
+  },
+  "general_purrgis" : {
+
+  },
+  "luluca" : {
+
+  }
+}

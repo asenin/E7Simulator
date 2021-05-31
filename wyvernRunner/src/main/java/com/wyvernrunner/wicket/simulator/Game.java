@@ -601,10 +601,10 @@ public class Game {
 
     public static void initGame(Map<String,Player> playerList) {
         // Hero
-        Player p1 = new Hero("GeneralPurrgis", 152, true, 1365, 1727, 23275, 37, 162, 12, 106, 5,5);
-        Player p2 = new Hero("Alexa", 116, true, 2690, 812, 7400, 89, 306, 82, 9, 5,1);
-        Player p3 = new Hero("Luluca", 204, true, 1786, 1056, 6237, 64, 277, 88, 14, 13,1);
-        Player p4 = new Hero("SeasideBellona", 126, true, 3426, 1126, 13839, 94, 308, 63, 0, 5,1);
+        Player p1 = new Hero("GeneralPurrgis", 152, true, 1365, 1727, 23275, 37, 162, 12, 106, 5,5, "");
+        Player p2 = new Hero("Alexa", 116, true, 2690, 812, 7400, 89, 306, 82, 9, 5,1, "");
+        Player p3 = new Hero("Luluca", 204, true, 1786, 1056, 6237, 64, 277, 88, 14, 13,1, "");
+        Player p4 = new Hero("SeasideBellona", 126, true, 3426, 1126, 13839, 94, 308, 63, 0, 5,1, "");
 
 
         // Monster

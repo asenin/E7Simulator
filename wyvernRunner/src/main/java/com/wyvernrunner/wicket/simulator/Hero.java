@@ -9,7 +9,7 @@ public class Hero extends Player  {
     private String skillsups;
 
 
-    public Hero(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual,int element) {
+    public Hero(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual,int element, String skillsups) {
         super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual,element);
 
     }
