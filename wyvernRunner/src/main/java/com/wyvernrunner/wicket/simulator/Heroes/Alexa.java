@@ -25,6 +25,7 @@ public class Alexa extends Hero {
     private int cdSkill3 = 5;
     private double dmgBoostS3 = 0.15;
 
+
     public Alexa(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual,int element, String skillups) {
         super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual,element, skillups);
 
@@ -50,6 +51,9 @@ public class Alexa extends Hero {
         /**********************************************************
         *  Complete Skillups -> Add poison rateup, cds3down test  *
         ***********************************************************/
+
+        //Skillup skeleton
+
     }
 
 
@@ -64,7 +68,7 @@ public class Alexa extends Hero {
         int i=0;
 
         while(i<2){
-            TempEffect poisonAlexa = new Bleed(2, this.poisonRateSkill2up);
+            TempEffect poisonAlexa = new Bleed(2, this.poisonRateSkill2up); //Change to poison
             effects.add(poisonAlexa);
         }
 
@@ -72,7 +76,15 @@ public class Alexa extends Hero {
     }
 
     public int skill3(int damageShare, int enemyDefense, int damageReduction, List<TempEffect> buffs){
-        double damage = 0; //remplace with damage calculation
+
+        int numberOfDebuffs = 0;
+        for (TempEffect element : buffs) {
+            if (element.getType()%2 != 0) {
+                numberOfDebuffs++;
+            }
+        }
+
+        double damage = 0; //remplace with damage calculation, mod is 15% per debuff so 0.15*numberOfDebuffs
 
         return (int)damage;
     }
