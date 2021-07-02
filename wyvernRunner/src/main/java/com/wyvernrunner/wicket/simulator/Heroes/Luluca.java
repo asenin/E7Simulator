@@ -22,6 +22,9 @@ public class Luluca extends Hero {
         super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual,element, skillups);
 
         //Test EE
+        //if ee1 add 0.15 to S1 rate
+
+
 
         //Test skillups
     }
@@ -29,7 +32,9 @@ public class Luluca extends Hero {
     public int skill1(int damageShare, int enemyDefense, int damageReduction, List<TempEffect> buffs){
         double damage = 0; //remplace with damage calculation, mod 20% increase proportionnal to lost hp
 
+        //if EE2 do another S1 35% chance
         return (int)damage;
+
     }
 
     public int skill2(int damageShare, int enemyDefense, int damageReduction, List<TempEffect> effects){
@@ -42,6 +47,8 @@ public class Luluca extends Hero {
         // effects.add(nailChloe);
 
         //Test for extra turn if EE n1
+
+
 
 
         return (int)damage;
