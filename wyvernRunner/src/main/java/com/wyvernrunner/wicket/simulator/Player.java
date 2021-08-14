@@ -1,8 +1,11 @@
 package com.wyvernrunner.wicket.simulator;
 
 import com.wyvernrunner.wicket.simulator.Main;
+import com.wyvernrunner.wicket.simulator.TempEffects.TempEffect;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Player {
 
@@ -196,5 +199,8 @@ public abstract class Player {
     public double getShield() { return this.shield; }
 
     public void setShield(double shield) { this.shield = shield; }
+
+    public void skillAI (int damageShare, int enemyDefense, int damageReduction, Map<String, ArrayList<TempEffect>> buffs, Map<String , Player> liste){
+    }
 
 }

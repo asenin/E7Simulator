@@ -1,5 +1,7 @@
 package com.wyvernrunner.wicket.simulator;
 
+import com.wyvernrunner.wicket.simulator.Heroes.Alexa;
+import com.wyvernrunner.wicket.simulator.Heroes.Krau;
 import com.wyvernrunner.wicket.simulator.Skills.Skills;
 import com.wyvernrunner.wicket.simulator.Skills.def_aoe_shield;
 import com.wyvernrunner.wicket.simulator.Skills.off_aoe_damage;
@@ -41,7 +43,9 @@ public class Game {
     public static Map<String,ArrayList<TempEffect>> Debuffstracker = new HashMap<>();
     public static Map<String,ArrayList<TempEffect>> Buffstracker = new HashMap<>();
 
-
+    public Game(){
+        //default constructor
+    }
 
 
 
@@ -54,6 +58,9 @@ public class Game {
 
         // Initiate the wave 1
         initGame(playerList);
+
+        Player p1 = new Alexa("Alexa",200,true,1400,1500,25000,35,160,65,120,5,4);
+        p1.skillAI(0,0,0, Debuffstracker, playerList);
 
         if (playerList.containsKey("GeneralPurrgis")){
             while (listE1.size() > 0 && listA.size() > 0) { // WAVE 1 stops whenever one list is empty
@@ -83,8 +90,8 @@ public class Game {
                 if (activePlayer.getAlive()) { // if he is alive after the debuffs applied on him (poison, burn, etc...)
                     if (activePlayer instanceof Hero) { // hero attacking
                         Player currentTarget = getLowHP(listE1);
-                        activePlayer.action(currentTarget); // if the current player is a hero, attacks a monster
-
+                        activePlayer.skillAI(currentTarget); // if the current player is a hero, attacks a monster
+                        // reduce certains debuffs durations / buffs 
 
 
                         Iterator<TempEffect> i =  Debuffstracker.get(activePlayer.getName()).iterator();

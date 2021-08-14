@@ -1,6 +1,7 @@
 package com.wyvernrunner.wicket.simulator.Heroes;
 
 import com.wyvernrunner.wicket.simulator.Hero;
+import com.wyvernrunner.wicket.simulator.Player;
 import com.wyvernrunner.wicket.simulator.TempEffects.Bleed;
 import com.wyvernrunner.wicket.simulator.TempEffects.TempEffect;
 
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Alexa extends Hero {
+public class Alexa extends Player {
 
     //private List<Double> skill1up;
     //private List<Double> skill2up;
@@ -19,15 +20,16 @@ public class Alexa extends Hero {
 
     private double rateSkill2up;
     private double poisonRateSkill2up = 0.8;
-    private int cdSkill2 = 3;
+    private int cdSkill2 = 0;
+    private int cdGlobalSkill2 = 3;
 
     private double rateSkill3up;
-    private int cdSkill3 = 5;
+    private int cdSkill3 = 0;
     private double dmgBoostS3 = 0.15;
+    private int cdGlobalSkill3 = 5;
 
-
-    public Alexa(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual,int element, String skillups) {
-        super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual,element, skillups);
+    public Alexa(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual,int element) {
+        super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual,element);
 
         //this.skill1up = new ArrayList<>();
         //this.skill2up = new ArrayList<>();
@@ -56,26 +58,38 @@ public class Alexa extends Hero {
 
     }
 
+    public void skillAI (int damageShare, int enemyDefense, int damageReduction, Map<String,ArrayList<TempEffect>> buffs, Map<String , Player> liste){
+        int damage;
+        if (cdSkill3 == 0) {
+             skill3(damageShare, enemyDefense,damageReduction,buffs);
+        } else if (cdSkill2 == 0) {
+             skill2(damageShare, enemyDefense,damageReduction,buffs);
+        } else {
+             skill1(damageShare, enemyDefense,damageReduction,buffs);
+        }
 
-    public int skill1(int damageShare, int enemyDefense, int damageReduction, List<TempEffect> buffs){
+    }
+
+
+    public int skill1(int damageShare, int enemyDefense, int damageReduction, Map<String,ArrayList<TempEffect>> buffs){
         double damage = 0; //remplace with damage calculation
 
         return (int)damage;
     }
 
-    public int skill2(int damageShare, int enemyDefense, int damageReduction, List<TempEffect> effects){
+    public int skill2(int damageShare, int enemyDefense, int damageReduction, Map<String,ArrayList<TempEffect>> buffs){
         double damage = 0; //remplace with damage calculation
         int i=0;
 
         while(i<2){
             TempEffect poisonAlexa = new Bleed(2, this.poisonRateSkill2up); //Change to poison
-            effects.add(poisonAlexa);
+            //effects.add(poisonAlexa);
         }
 
         return (int)damage;
     }
 
-    public int skill3(int damageShare, int enemyDefense, int damageReduction, List<TempEffect> buffs){
+    public int skill3(int damageShare, int enemyDefense, int damageReduction, Map<String,ArrayList<TempEffect>> buffs){
 
         int numberOfDebuffs = 0;
         for (TempEffect element : buffs) {
