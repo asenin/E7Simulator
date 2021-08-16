@@ -1,7 +1,9 @@
 package com.wyvernrunner.wicket.simulator.Heroes;
+//package com.wyvernrunner.wicket.simulator.TempEffects;
 
 import com.wyvernrunner.wicket.simulator.Player;
-import com.wyvernrunner.wicket.simulator.TempEffects.Bleed;
+import com.wyvernrunner.wicket.simulator.TempEffects.DecreaseDefense;
+import com.wyvernrunner.wicket.simulator.TempEffects.Poison;
 import com.wyvernrunner.wicket.simulator.TempEffects.TempEffect;
 
 import javax.swing.text.Element;
@@ -70,7 +72,7 @@ public class Alexa extends Player {
             }
          */
 
-        /**********************************************************
+        /***********************************************************
          *  Complete Skillups -> Add poison rateup, cds3down test  *
          ***********************************************************/
 
@@ -84,14 +86,13 @@ public class Alexa extends Player {
      **********************************************************/
 
 
-    public void skillAI(int damageShare, int enemyDefense, int damageReduction, Map<String, ArrayList<TempEffect>> buffs, Map<String, Player> liste) {
-        int damage;
+    public void skillAI(Player currentTarget, Map<String, Player> playerList) {
         if (cdSkill3 == 0) {
-            skill3(damageShare, enemyDefense, damageReduction, buffs);
+            skill3(currentTarget);
         } else if (cdSkill2 == 0) {
-            skill2(damageShare, enemyDefense, damageReduction, buffs);
+            skill2(currentTarget);
         } else {
-            skill1(damageShare, enemyDefense, damageReduction, buffs);
+            skill1(currentTarget);
         }
 
     }
@@ -105,7 +106,7 @@ public class Alexa extends Player {
     public void skill1(Player currentTarget) {
         applyDamage(currentTarget, damageDealt(getAttack(),
                 getAtkMods(BuffsList,DebuffsList), // automatically check if it has attack buff
-                rateSkill2up, // S2 Rate
+                rateSkill1up, // S1 Rate
                 0.0, // S1 has no flat mod
                 getFlat2Mod(currentTarget), // TODO DDJ
                 getPOW(1.0), // S1 pow is 1.0
@@ -120,30 +121,68 @@ public class Alexa extends Player {
         ));
     }
 
-    public int skill2(int damageShare, int enemyDefense, int damageReduction, Map<String, ArrayList<TempEffect>> buffs) {
-        double damage = 0; //replace with damage calculation
-        int i = 0;
+    public void skill2(Player currentTarget){
 
-        while (i < 2) {
-            TempEffect poisonAlexa = new Bleed(2, this.poisonRateSkill2up); //Change to poison
-            //effects.add(poisonAlexa);
-        }
+        // DAMAGE
+        applyDamage(currentTarget, damageDealt(getAttack(),
+                getAtkMods(BuffsList,DebuffsList), // automatically check if it has attack buff
+                rateSkill2up, // S2 Rate
+                0.0, // S2 has no flat mod
+                getFlat2Mod(currentTarget), // TODO DDJ
+                getPOW(powSkill2),
+                getSkillEnhanceMod(EnhanceModSkill2),
+                0.0, // no external mod
+                getHitTypeMod(getElement(), currentTarget.getElement(),getCc(),getCdmg()),
+                getTargetDebuff(currentTarget),
+                getElementalMod(getElement(), currentTarget.getElement()),
+                currentTarget.getDefense(),
+                getDefbreakMod(currentTarget),
+                0.0, 0.0, 0.0
+        ));
 
-        return (int) damage;
+        // DEBUFFS
+
+        currentTarget.getTickDamageList().add(new Poison(2,1));
+        currentTarget.getTickDamageList().add(new Poison(2,1));
     }
 
-    public int skill3(int damageShare, int enemyDefense, int damageReduction, Map<String, ArrayList<TempEffect>> buffs) {
+    public void skill3(Player currentTarget) {
 
+        // COUNT NUMBER OF TICK DAMAGE DEBUFF
         int numberOfDebuffs = 0;
-        for (TempEffect element : buffs) {
-            if (element.getType() % 2 != 0) {
-                numberOfDebuffs++;
+        for (TempEffect element : currentTarget.getTickDamageList()) {
+            numberOfDebuffs++;
+        }
+
+        // COUNT NUMBER OF UNIQUE DEBUFF
+        TempEffect i;
+        Iterator<Map.Entry<Integer, TempEffect>> it = BuffsList.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Integer, TempEffect> pair = it.next();
+            i = pair.getValue(); // i = TempEffect
+            if (i != null){
+                if (i.duration >0){
+                    numberOfDebuffs++;
+                }
             }
         }
 
-        double damage = 0; //remplace with damage calculation, mod is 15% per debuff so 0.15*numberOfDebuffs
-
-        return (int) damage;
+        // DAMAGE
+        applyDamage(currentTarget, damageDealt(getAttack(),
+                getAtkMods(BuffsList,DebuffsList), // automatically check if it has attack buff
+                rateSkill3up, // S3 Rate
+                0.0, // S3 has no flat mod
+                getFlat2Mod(currentTarget), // TODO DDJ
+                getPOW(powSkill3),
+                getSkillEnhanceMod(EnhanceModSkill3),
+                0.15*numberOfDebuffs, // bonus 15% damage per debuff
+                getHitTypeMod(getElement(), currentTarget.getElement(),getCc(),getCdmg()),
+                getTargetDebuff(currentTarget),
+                getElementalMod(getElement(), currentTarget.getElement()),
+                currentTarget.getDefense(),
+                getDefbreakMod(currentTarget),
+                0.0, 0.0, 0.0
+        ));
     }
 
 
@@ -152,14 +191,6 @@ public class Alexa extends Player {
      **********************************************************/
 
 
-    /*
-    TempEffect i;
-        Iterator<Map.Entry<Integer, TempEffect>> it = BuffsList.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Integer, TempEffect> pair = it.next();
-            i = pair.getValue(); // i = TempEffect
-        }
-     */
     public static double damageDealt(double Attack, double Atkmod, double SkillRate, double FlatMod, double FlatMod2, double pow, double SkillEnhanceMods, double extMods, double HitTypeMod, double Target, double ElementalMod, double Defense,
                                      double DefbreakMod, double PenMod, double DamageReduction, double DamageSharing) {
         double atkMods = (Attack * (1 + Atkmod) * SkillRate + FlatMod) * 1.871 + (FlatMod2);

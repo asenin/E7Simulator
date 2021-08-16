@@ -235,7 +235,7 @@ public abstract class Player {
         return DebuffsList;
     }
 
-    public void skillAI (int damageShare, int enemyDefense, int damageReduction, Map<String, ArrayList<TempEffect>> buffs, Map<String , Player> liste){
+    public void skillAI (Player currentTarget, Map<String , Player> playerList){
     }
 
 

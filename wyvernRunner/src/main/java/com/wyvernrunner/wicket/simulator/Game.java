@@ -59,8 +59,8 @@ public class Game {
         // Initiate the wave 1
         initGame(playerList);
 
-        Player p1 = new Alexa("Alexa",200,true,1400,1500,25000,35,160,65,120,5,4);
-        p1.skillAI(0,0,0, Debuffstracker, playerList);
+        //Player p1 = new Alexa("Alexa",200,true,1400,1500,25000,35,160,65,120,5,4);
+        //p1.skillAI(currentTarget, playerList);
 
 
         if (playerList.containsKey("GeneralPurrgis")){
@@ -86,7 +86,7 @@ public class Game {
                 if (activePlayer.getAlive()) { // if he is alive after the debuffs applied on him (poison, burn, etc...)
                     if (activePlayer instanceof Hero) { // hero attacking
                         Player currentTarget = getLowHP(listE1);
-                        activePlayer.skillAI(currentTarget); // if the current player is a hero, attacks a monster
+                        activePlayer.skillAI(currentTarget,playerList); // if the current player is a hero, attacks a monster
                         // reduce certains debuffs durations / buffs 
 
 
