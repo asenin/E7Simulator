@@ -6,6 +6,7 @@
         <exploded>true</exploded>
         <module>wyvernRunner</module>
         <packaging>war</packaging>
+        <unpackNestedArchives>false</unpackNestedArchives>
       </options>
     </properties>
     <root id="root">
@@ -15,7 +16,7 @@
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="Maven: org.apache.wicket:wicket-core:9.2.0" />
-          <element id="library" level="project" name="Maven: org.apache.commons.math3" />
+          <element id="library" level="project" name="Maven: com.github.openjson:openjson:1.0.12" />
           <element id="library" level="project" name="Maven: org.apache.wicket:wicket-request:9.2.0" />
           <element id="library" level="project" name="Maven: org.apache.wicket:wicket-util:9.2.0" />
           <element id="library" level="project" name="Maven: commons-fileupload:commons-fileupload:1.4" />

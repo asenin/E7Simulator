@@ -62,6 +62,7 @@ public class Game {
         Player p1 = new Alexa("Alexa",200,true,1400,1500,25000,35,160,65,120,5,4);
         p1.skillAI(0,0,0, Debuffstracker, playerList);
 
+
         if (playerList.containsKey("GeneralPurrgis")){
             while (listE1.size() > 0 && listA.size() > 0) { // WAVE 1 stops whenever one list is empty
                 // simule le déroulement des tours de jeu ( 1 tour = 1 personnage à 100% ) // boucler sur le nombre de joueurs vivants
@@ -75,17 +76,12 @@ public class Game {
                 // Todo : Coder les actions
 
 
-
-
                 updateDebuffsStartTurn(activePlayer);
                 if(activePlayer instanceof Hero){ // check if active player is dead, and do the updates everywhere when it's the case
                     updateDeadList(activePlayer,listA);
                 } else {
                     updateDeadList(activePlayer,listE1);
                 }
-
-
-
 
                 if (activePlayer.getAlive()) { // if he is alive after the debuffs applied on him (poison, burn, etc...)
                     if (activePlayer instanceof Hero) { // hero attacking
@@ -94,7 +90,11 @@ public class Game {
                         // reduce certains debuffs durations / buffs 
 
 
+
+
                         Iterator<TempEffect> i =  Debuffstracker.get(activePlayer.getName()).iterator();
+
+
                         switch (chooseSkill(activePlayer)){ // skill
                             case 1 : // skill 1
                                 switch (activePlayer.getName()){
