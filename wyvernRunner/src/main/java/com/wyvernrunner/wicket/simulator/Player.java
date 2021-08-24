@@ -30,7 +30,7 @@ public abstract class Player {
     private double attack;
     private double defense;
     private double health;
-    private final double maxhp = health;
+    private final double maxhp;
     private float cc ;
     private int cdmg;
     private int eff;
@@ -38,7 +38,7 @@ public abstract class Player {
     private int dual;
     private final int element;
     private double shield;
-
+    private int team ;
 
     ////////////////////////////
     // TODO : DELETE THIS SECTION AND KEEP BELOW ONCE EVERYTHING IS CLEANED
@@ -55,7 +55,7 @@ public abstract class Player {
     private Map<Integer, TempEffect> BuffsList = new HashMap<>(); // unique debuffs
 
 
-    public Player(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual,int element) {
+    public Player(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual,int element,int team, double shield) {
         this.speed = speed;
         this.name = name;
         this.alive = alive;
@@ -68,8 +68,9 @@ public abstract class Player {
         this.effres = effres;
         this.dual = dual;
         this.element = element;
-        this.shield= 0;
-
+        this.team = team;
+        this.shield = shield;
+        this.maxhp=health;
 
         // TODO : REPLACE WITH REMOVING ALL BUFFS/DEBUFFS AT DEATH
         buffList.replaceAll((k,v)->v=0); // reset all buffs
@@ -89,16 +90,6 @@ public abstract class Player {
 
     }
 
-    public void playerPlayed() {
-        System.out.println(name + " played !"); // affichage console preuve d'avoir joué
-    }
-
-    public void action(Player player) {
-        player.setHealth(player.getHealth() - (getAttack()+ 0 )*1*1*(1.871*1)/(player.getDefense()/300+1)*1); // flat modifier / multi / element / pow / hitType)
-        if (player.getHealth() <= 0) {
-            player.setAlive(false); // set it to dead
-        }
-    }
 
 
     //////////////////////////////////////////////////////////
@@ -223,19 +214,27 @@ public abstract class Player {
 
     public void setShield(double shield) { this.shield = shield; }
 
+    public int getTeam() {
+        return team;
+    }
+
+    public void setTeam(int team) {
+        this.team = team;
+    }
+
     public ArrayList<TempEffect> getTickDamageList() {
-        return TickDamageList;
+        return this.TickDamageList;
     }
 
     public Map<Integer,TempEffect> getBuffsList() {
-        return BuffsList;
+        return this.BuffsList;
     }
 
     public Map<Integer, TempEffect> getDebuffsList() {
-        return DebuffsList;
+        return this.DebuffsList;
     }
 
-    public void skillAI (Player currentTarget, Map<String , Player> playerList){
+    public void skillAI (Player currentTarget, Map<String , Player> playerList,double tickValue,ArrayList<String> listA,ArrayList<String> listE1){
     }
 
 

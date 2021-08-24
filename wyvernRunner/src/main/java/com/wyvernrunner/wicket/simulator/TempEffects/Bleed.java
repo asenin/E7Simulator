@@ -6,11 +6,12 @@ public class Bleed extends TempEffect{
 
 
     private int duration;
-    private double rate;
 
-    public Bleed(int duration,double rate) {
+    public Bleed(int duration,double rate, Player caster, Player target) {
         this.duration = duration;
-        this.rate = rate;
+        this.rate = rate*100;
+        this.caster = caster;
+        this.target = target;
     }
 
     public int getType() {
@@ -33,6 +34,10 @@ public class Bleed extends TempEffect{
 
     public void resetEffects(Player caster, Player target) {
 
+    }
+
+    public void reduceDuration(){
+        duration--;
     }
 
 

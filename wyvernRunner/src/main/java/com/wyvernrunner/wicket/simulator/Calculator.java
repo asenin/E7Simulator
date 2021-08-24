@@ -8,7 +8,7 @@ public class Calculator {
 
    public String hitType(Hero Hero){
 
-
+        /*
         if (Hero.getCc()==100){
             return "crit";
         } else {
@@ -20,6 +20,9 @@ public class Calculator {
             }
         }
         return "miss";
+
+         */
+       return "nothing";
     }
     public double calculate(String hitType, Hero attacker, Hero defender /* Artifact Artifact , Skill Skill*/){
         //query skill data this will come from Skill object

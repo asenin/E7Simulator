@@ -1,9 +1,6 @@
 package com.wyvernrunner.wicket.simulator;
 
-import com.wyvernrunner.wicket.simulator.Heroes.Alexa;
-import com.wyvernrunner.wicket.simulator.Heroes.Chloe;
-import com.wyvernrunner.wicket.simulator.Heroes.Krau;
-import com.wyvernrunner.wicket.simulator.Heroes.SeasideBellona;
+import com.wyvernrunner.wicket.simulator.Heroes.*;
 import com.wyvernrunner.wicket.simulator.Monsters_W13.Dragona;
 import com.wyvernrunner.wicket.simulator.Monsters_W13.Naga;
 
@@ -118,14 +115,14 @@ public class Main {
 
     public static void initGame(HashMap<String,Player> playerList){
         // Hero
-        Player p1 = new Hero("Krau",200,true,1400,1500,25000,35,160,65,120,5,4);
-        Player p2 = new Hero("Alexa",197,true,1663,733,7484,87,272,54,0,5,1);
-        Player p3 = new Hero("Chloe",208,true,2347,660,7189,40,233,66,59,5,1);
-        Player p4 = new Hero("SeasideBellona",201,true,2622,871,10186,83,260,96,14,5,1);
+        Player p1 = new Krau("Krau",200,true,1400,1500,25000,35,160,65,120,5,4,0,0);
+        Player p2 = new Chloe("Chloe",197,true,1663,733,7484,87,272,54,0,5,1,0,0);
+        Player p3 = new Alexa("Alexa",208,true,2347,660,7189,40,233,66,59,5,1,0,0);
+        Player p4 = new SeasideBellona("SeasideBellona",201,true,2622,871,10186,83,260,96,14,5,1,0,0);
         // Monster
-        Player p5 = new Monster("Naga1",154,true,2222, 1340,13358,50,150,50,45,5,2); // LES 2 DEUX NAGA DOIVENT AVOIR DEUX SPEED DIFFÉRENTES
-        Player p6 = new Monster("Naga2",155,true,2222,1340,13358,50,150,50,45,5,2);
-        Player p7 = new Monster("Dragona",175,true,3333,1392,20241,50,150,50,65,5,2);
+        Player p5 = new Naga("Naga1",154,true,2222, 1340,13358,50,150,50,45,5,2,1,0);
+        Player p6 = new Naga("Naga2",155,true,2222,1340,13358,50,150,50,45,5,2,1,0);
+        Player p7 = new Naga("Dragona",175,true,3333,1392,20241,50,150,50,65,5,2,1,0);
 
         // Add heroes on data
         playerList.put(p1.getName(),p1); // p1 is the front

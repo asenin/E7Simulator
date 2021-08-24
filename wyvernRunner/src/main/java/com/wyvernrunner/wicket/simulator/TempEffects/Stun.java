@@ -6,11 +6,10 @@ public class Stun extends TempEffect {
 
 
     private int duration;
-    private double rate;
 
     public Stun(int duration,double rate) {
         this.duration = duration;
-        this.rate = rate;
+        this.rate = rate*100;
     }
 
     public int getType() {
@@ -27,5 +26,9 @@ public class Stun extends TempEffect {
 
     public void resetEffects(Player caster, Player target) {
 
+    }
+
+    public void reduceDuration(){
+        duration--;
     }
 }

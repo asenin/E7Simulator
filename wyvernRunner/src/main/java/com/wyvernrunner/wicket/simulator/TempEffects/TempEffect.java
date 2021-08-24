@@ -13,7 +13,13 @@ public abstract class TempEffect {
 
     //public int getType(){ return this.type; }
 
-    public abstract int getType();
+    public int getType() {return type;}
+
+    public void setType(int type) {this.type = type;}
+
+    public double getRate() {return rate;}
+
+    public void setRate(double rate) {this.rate = rate;}
 
     public Player getCaster(){ return this.caster; }
 
@@ -27,11 +33,11 @@ public abstract class TempEffect {
         return this.duration;
     }
 
-    public double getRate(){return this.rate; }
-
     public abstract void applyEffects(Player caster, Player target);
 
     public abstract void resetEffects(Player caster, Player target);
+
+    public abstract void reduceDuration();
 
 
 }

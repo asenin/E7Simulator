@@ -6,21 +6,22 @@ public class Poison extends TempEffect{
 
 
     private int duration;
-    private double rate;
 
-    public Poison(int duration,double rate) {
+    public Poison(int duration,double rate, Player caster,Player target) {
         this.duration = duration;
-        this.rate = rate;
+        this.rate = rate*100;
+        this.caster = caster;
+        this.target = target;
     }
 
     public int getType() {
-        int type = 13;
+        int type = 19;
         return type;}
 
     public int getDuration() {return this.duration;}
 
-    public void applyEffects(Player caster, Player target){
-        double damageReceived = caster.getHealth()*0.05;
+    public void applyEffects(Player caster,Player target){
+        double damageReceived = target.getHealth()*0.05;
         double damage = target.getShield() - damageReceived;
         if (damage > 0){
             target.setShield(target.getShield() - damageReceived);
@@ -34,5 +35,7 @@ public class Poison extends TempEffect{
 
     }
 
-
+    public void reduceDuration(){
+        duration--;
+    }
 }
