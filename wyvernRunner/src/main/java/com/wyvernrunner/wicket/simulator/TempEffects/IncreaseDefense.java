@@ -13,7 +13,7 @@ public class IncreaseDefense extends TempEffect {
     }
 
     public int getType(){
-        int type = 6;
+        type = 6;
         return type;
     }
     public int getDuration(){
@@ -21,7 +21,7 @@ public class IncreaseDefense extends TempEffect {
     }
 
     public void applyEffects(Player caster, Player target){
-        target.setDefense(target.getDefense()+originalDefense*0.6);
+        //target.setDefense(target.getDefense()+originalDefense*0.6);
     }
 
     public void resetEffects(Player caster, Player target) {target.setDefense(target.getDefense()-originalDefense*0.6); }

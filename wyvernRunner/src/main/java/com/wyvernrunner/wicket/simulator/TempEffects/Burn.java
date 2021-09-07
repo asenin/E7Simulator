@@ -14,7 +14,7 @@ public class Burn extends TempEffect {
     }
 
     public int getType() {
-        int type = 11;
+        type = 11;
         return type;}
 
     public int getDuration() {return this.duration;}

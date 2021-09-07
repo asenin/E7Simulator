@@ -1,9 +1,8 @@
 package com.wyvernrunner.wicket.simulator.Heroes;
 
+import com.wyvernrunner.wicket.simulator.Monsters_W13.Wyvern;
 import com.wyvernrunner.wicket.simulator.Player;
-import com.wyvernrunner.wicket.simulator.TempEffects.Provoke;
-import com.wyvernrunner.wicket.simulator.TempEffects.Stun;
-import com.wyvernrunner.wicket.simulator.TempEffects.TempEffect;
+import com.wyvernrunner.wicket.simulator.TempEffects.*;
 
 import java.util.*;
 
@@ -61,7 +60,7 @@ public class GeneralPurrgis extends Player {
             skill1(currentTarget);
         } else {
             if (cdSkill3 == 0) {
-                skill3(listE1,playerList);
+                skill3(listE1,playerList,listA);
             } else { // reduce cd of S2 and S3 by 1
                 skill1(currentTarget);
             }
@@ -97,7 +96,7 @@ public class GeneralPurrgis extends Player {
         }
     }
 
-    public void skill3( ArrayList<String> listE1,Map<String, Player> playerList ) {
+    public void skill3(ArrayList<String> listE1,Map<String, Player> playerList,ArrayList<String> listA) {
 
         Player currentTarget;
         for (String player : listE1) {
@@ -119,8 +118,15 @@ public class GeneralPurrgis extends Player {
             ));
         }
 
-        // STUN
+        // GIVE ATK BUFF TO ALL THE MEMBERS ALIVE
+        for (String player : listA) {
+            if (playerList.get(player).getBuffsList().get(2) != null) {
+                playerList.get(player).getBuffsList().get(2).setDuration(2);
+            }
+            playerList.get(player).getBuffsList().put(2,new IncreaseAttack(2,1,playerList.get(getName()),playerList.get(getName()))); // ignore target
+        }
 
+        // STUN
         if (listE1.size() > 2) { // if more than 2 are alive
             ArrayList<String> tempList = new ArrayList<>(listE1);
             Random r = new Random();
@@ -222,7 +228,7 @@ public class GeneralPurrgis extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG/100;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -232,11 +238,24 @@ public class GeneralPurrgis extends Player {
                             }
                         }
                     }
-                } else { // non earth
+                } else if (targelement == 2) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // non earth non fire
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG/100;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -246,7 +265,7 @@ public class GeneralPurrgis extends Player {
                         }
                     }
                 }
-            case 2 : // fire
+            case 2: // fire
                 if (targelement == 1) { // water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
@@ -255,7 +274,7 @@ public class GeneralPurrgis extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG/100;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -265,11 +284,24 @@ public class GeneralPurrgis extends Player {
                             }
                         }
                     }
+                } else if (targelement == 3) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
                 } else { // non water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG/100;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -279,7 +311,7 @@ public class GeneralPurrgis extends Player {
                         }
                     }
                 }
-            case 3 : // earth
+            case 3: // earth
                 if (targelement == 2) { // fire
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
@@ -288,7 +320,7 @@ public class GeneralPurrgis extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG/100;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -298,11 +330,24 @@ public class GeneralPurrgis extends Player {
                             }
                         }
                     }
+                } else if (targelement == 1) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
                 } else { // non water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG/100;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -312,6 +357,63 @@ public class GeneralPurrgis extends Player {
                         }
                     }
                 }
+            case 4: // dark
+                if (targelement == 5) { // 15% bonus cc to light
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // non light
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+            case 5: // light
+                if (targelement == 4) { // 15% bonus cc to dark
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // no dark
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+
             default : // dark or light
                 Random r = new Random();
                 int randomInt = r.nextInt(100);
@@ -327,7 +429,6 @@ public class GeneralPurrgis extends Player {
                 }
         }
     }
-
 
     public static double getTargetDebuff(Player target){
         if (target.getDebuffsList().get(27) == null) {
@@ -407,27 +508,30 @@ public class GeneralPurrgis extends Player {
      **********************************************************/
 
     public void landS1Debuff(Player currentTarget, TempEffect tempEffect) {
-        Random r = new Random();
-        int randomInt = r.nextInt(100);
-        if (randomInt < tempEffect.rate) { // debuff effect triggers
-            randomInt = r.nextInt(100);
-            if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                currentTarget.getDebuffsList().put(21,new Provoke(tempEffect.duration, tempEffect.rate) {
-                });
+        if (!(currentTarget instanceof Wyvern)) { // stun if not a wyvern
+            Random r = new Random();
+            int randomInt = r.nextInt(100);
+            if (randomInt < tempEffect.rate) { // debuff effect triggers
+                randomInt = r.nextInt(100);
+                if (randomInt > Math.max(currentTarget.getEffres() - getEffres(), 15)) { // bypass innate 15% ER
+                    currentTarget.getDebuffsList().put(21,tempEffect);
+                }
             }
         }
     }
 
     public void landS3Debuff(Player currentTarget, TempEffect tempEffect) {
-        Random r = new Random();
-        int randomInt = r.nextInt(100);
-        if (randomInt < tempEffect.rate) { // debuff effect triggers
-            randomInt = r.nextInt(100);
-            if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                currentTarget.getDebuffsList().put(7,new Stun(tempEffect.getDuration(), tempEffect.getRate()) {
-                });
+        if (!(currentTarget instanceof Wyvern)){ // stun if not a wyvern
+            Random r = new Random();
+            int randomInt = r.nextInt(100);
+            if (randomInt < tempEffect.rate) { // debuff effect triggers
+                randomInt = r.nextInt(100);
+                if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
+                    currentTarget.getDebuffsList().put(7,tempEffect);
+                }
             }
         }
+
     }
 
 

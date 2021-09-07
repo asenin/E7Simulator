@@ -13,7 +13,7 @@ public class Stun extends TempEffect {
     }
 
     public int getType() {
-        int type = 7;
+        type = 7;
         return type;
     }
     public int getDuration(){

@@ -1,7 +1,5 @@
 package com.wyvernrunner.wicket.simulator;
 
-import com.wyvernrunner.wicket.simulator.Main;
-import com.wyvernrunner.wicket.simulator.TempEffects.DecreaseDefense;
 import com.wyvernrunner.wicket.simulator.TempEffects.TempEffect;
 
 import java.util.ArrayList;

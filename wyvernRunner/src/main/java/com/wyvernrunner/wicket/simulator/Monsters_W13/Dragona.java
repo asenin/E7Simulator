@@ -1,7 +1,9 @@
 package com.wyvernrunner.wicket.simulator.Monsters_W13;
 
 
+import com.wyvernrunner.wicket.simulator.Heroes.GeneralPurrgis;
 import com.wyvernrunner.wicket.simulator.Heroes.SeasideBellona;
+import com.wyvernrunner.wicket.simulator.Interfaces.IFocus;
 import com.wyvernrunner.wicket.simulator.Player;
 import com.wyvernrunner.wicket.simulator.TempEffects.Poison;
 import com.wyvernrunner.wicket.simulator.TempEffects.TempEffect;
@@ -48,24 +50,29 @@ public class Dragona extends Player {
         super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual,element,team, shield);
     }
 
-    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1) {
+    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue, ArrayList<String> listA, ArrayList<String> listE1) {
         if ((DebuffsList.get(7) != null) && (DebuffsList.get(7).duration > 0)) { // if stunned
             // doesn't do anything because stunned
             if (cdSkill2 > 0) { // reduce cd of S2 by 1
                 cdSkill2--;
             }
         } else if ((DebuffsList.get(21) != null) && (DebuffsList.get(21).duration > 0)) { // if taunted, do S1 onto caster of taunt
-            skill1(DebuffsList.get(21).caster,playerList);
+            skill1(DebuffsList.get(21).caster,playerList,listE1);
         } else if ((DebuffsList.get(25) != null) && (DebuffsList.get(25).duration > 0)) { // if silenced -> S1
-            skill1(currentTarget,playerList);
+            skill1(currentTarget,playerList,listE1);
         } else if (cdSkill2 == 0) {
             skill2(currentTarget,playerList);
         } else { // reduce cd of S2 and S3 by 1
-            skill1(currentTarget,playerList);
+            skill1(currentTarget,playerList,listE1);
         }
     }
 
-    public void skill1(Player currentTarget,Map<String, Player> playerList) {
+    /**********************************************************
+     *                  SKILLS DESCRIPTION                    *
+     **********************************************************/
+
+
+    public void skill1(Player currentTarget,Map<String, Player> playerList,ArrayList<String> listE1) {
         applyDamage(currentTarget, damageDealt(getAttack(),
                 getAtkMods(BuffsList,DebuffsList), // automatically check if it has attack buff
                 rateSkill1up, // S1 Rate
@@ -79,22 +86,26 @@ public class Dragona extends Player {
                 getElementalMod(getElement(), currentTarget.getElement()),
                 currentTarget.getDefense(),
                 getDefbreakMod(currentTarget),
-                0.0, 0.0, 0.0
+                0.0, getDamageReduction(currentTarget), 0.0
         ));
 
         // DEBUFF
         landPoisonDebuff(currentTarget,new Poison(2,poisonRateSkill1up,playerList.get(getName()),currentTarget));
 
         // SeasideBellona test
-        if(currentTarget instanceof SeasideBellona) { // + 1 stack every hit, takes in account dual attacks
-            ((SeasideBellona) currentTarget).setS2stacks(((SeasideBellona) currentTarget).getS2stacks() + 1);
+
+        for (Map.Entry player : playerList.entrySet()) {
+            Player pl = (Player) player.getValue();
+            if (pl instanceof IFocus){
+                ((IFocus) pl).setFocus(((IFocus) pl).getFocus() + 1);
+            }
         }
 
         if (cdSkill2 > 0) { // reduce cd of S2 by 1
             cdSkill2--;
         }
-    }
 
+    }
 
     public void skill2(Player currentTarget,Map<String, Player> playerList){
 
@@ -112,7 +123,7 @@ public class Dragona extends Player {
                 getElementalMod(getElement(), currentTarget.getElement()),
                 currentTarget.getDefense(),
                 getDefbreakMod(currentTarget),
-                0.0, 0.0, 0.0
+                0.0, getDamageReduction(currentTarget), 0.0
         ));
 
         // DEBUFFS
@@ -121,6 +132,10 @@ public class Dragona extends Player {
         landPoisonDebuff(currentTarget,new Poison(2,poisonRateSkill2up,playerList.get(getName()),currentTarget));
 
         cdSkill2 = cdGlobalSkill2; // put the skill on CD
+    }
+
+    public void dualAttack(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1) {
+
     }
 
     /**********************************************************
@@ -201,7 +216,7 @@ public class Dragona extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG/100;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -211,11 +226,24 @@ public class Dragona extends Player {
                             }
                         }
                     }
-                } else { // non earth
+                } else if (targelement == 2) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // non earth non fire
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG/100;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -225,7 +253,7 @@ public class Dragona extends Player {
                         }
                     }
                 }
-            case 2 : // fire
+            case 2: // fire
                 if (targelement == 1) { // water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
@@ -234,7 +262,7 @@ public class Dragona extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG/100;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -244,11 +272,24 @@ public class Dragona extends Player {
                             }
                         }
                     }
+                } else if (targelement == 3) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
                 } else { // non water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG/100;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -258,7 +299,7 @@ public class Dragona extends Player {
                         }
                     }
                 }
-            case 3 : // earth
+            case 3: // earth
                 if (targelement == 2) { // fire
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
@@ -267,7 +308,7 @@ public class Dragona extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG/100;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -277,11 +318,24 @@ public class Dragona extends Player {
                             }
                         }
                     }
+                } else if (targelement == 1) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
                 } else { // non water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG/100;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -291,6 +345,63 @@ public class Dragona extends Player {
                         }
                     }
                 }
+            case 4: // dark
+                if (targelement == 5) { // 15% bonus cc to light
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // non light
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+            case 5: // light
+                if (targelement == 4) { // 15% bonus cc to dark
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // no dark
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+
             default : // dark or light
                 Random r = new Random();
                 int randomInt = r.nextInt(100);
@@ -306,7 +417,6 @@ public class Dragona extends Player {
                 }
         }
     }
-
 
     public static double getTargetDebuff(Player target){
         if (target.getDebuffsList().get(27) == null) {
@@ -366,6 +476,13 @@ public class Dragona extends Player {
         }
     }
 
+    public static double getDamageReduction(Player target) {
+        if (target instanceof GeneralPurrgis){
+            return 0.15;
+        } else {
+            return 0.0;
+        }
+    }
 
     /**********************************************************
      *                  GETTERS AND SETTERS                   *

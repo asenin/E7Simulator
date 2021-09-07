@@ -13,7 +13,7 @@ public class Unbuffable extends TempEffect {
         }
 
         public int getType() {
-            int type = 15;
+            type = 15;
             return type;
         }
 

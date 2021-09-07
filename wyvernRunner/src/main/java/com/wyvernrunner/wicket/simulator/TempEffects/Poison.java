@@ -15,7 +15,7 @@ public class Poison extends TempEffect{
     }
 
     public int getType() {
-        int type = 19;
+        type = 19;
         return type;}
 
     public int getDuration() {return this.duration;}

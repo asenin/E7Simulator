@@ -70,9 +70,9 @@ public class Luluca extends Player {
                 cdSkill3--;
             }
         } else if ((DebuffsList.get(21) != null) && (DebuffsList.get(21).duration > 0)) { // if taunted, do S1 onto caster of taunt
-            skill1(DebuffsList.get(21).caster);
+            skill1(playerList,DebuffsList.get(21).caster);
         } else if ((DebuffsList.get(25) != null) && (DebuffsList.get(25).duration > 0)) { // if silenced -> S1
-            skill1(currentTarget);
+            skill1(playerList,currentTarget);
         } else { // TODO : SKILLS ARE OFF, REMOVE COMMENTS TO HAVE SKILLS ON
             /*
             if (cdSkill3 == 0) {
@@ -83,7 +83,7 @@ public class Luluca extends Player {
                 skill1(currentTarget);
             }
              */
-            skill1(currentTarget);
+            skill1(playerList,currentTarget);
         }
     }
 
@@ -92,7 +92,7 @@ public class Luluca extends Player {
      **********************************************************/
 
 
-    public void skill1(Player currentTarget) {
+    public void skill1(Map<String, Player> playerList,Player currentTarget) {
         applyDamage(currentTarget, damageDealt(getAttack(),
                 getAtkMods(BuffsList,DebuffsList) + getSelfAtkMod(), // automatically check if it has attack buff
                 rateSkill1up, // S1 Rate
@@ -116,7 +116,7 @@ public class Luluca extends Player {
             cdSkill3--;
         }
 
-        landS1Debuff(currentTarget,new DecreaseDefense(2,defbreakSkill1up)); // 2 turns def break
+        landS1Debuff(currentTarget,new DecreaseDefense(2,defbreakSkill1up,playerList.get(getName()),currentTarget)); // 2 turns def break
 
     }
 
@@ -158,7 +158,7 @@ public class Luluca extends Player {
             ));
 
             // DEBUFF
-            landS3Debuff(currentTarget,new DecreaseDefense(2,S3DebuffsRateSkill3up)); // 2 turns def break at 60% chance
+            landS3Debuff(currentTarget,new DecreaseDefense(2,S3DebuffsRateSkill3up,playerList.get(getName()),currentTarget)); // 2 turns def break at 60% chance
 
             // INCREASED ATTACK
             if (getSelfAtkMod() < 0.7) {
@@ -465,7 +465,7 @@ public class Luluca extends Player {
         if (randomInt < tempEffect.rate) { // debuff effect triggers
             randomInt = r.nextInt(100);
             if (randomInt > Math.max(currentTarget.getEffres()-getEff(), 15)){ // bypass innate 15% ER
-                currentTarget.getDebuffsList().put(3,new DecreaseDefense(tempEffect.getDuration(), tempEffect.getRate()));
+                currentTarget.getDebuffsList().put(3,tempEffect);
             }
         }
     }
@@ -477,7 +477,7 @@ public class Luluca extends Player {
         if (randomInt < tempEffect.rate) { // debuff effect triggers
             randomInt = r.nextInt(100);
             if (randomInt > Math.max(Math.abs(currentTarget.getEffres()-getEff()), 15)){ // bypass innate 15% ER
-                currentTarget.getDebuffsList().put(3, new DecreaseDefense(tempEffect.getDuration(), tempEffect.getRate()));
+                currentTarget.getDebuffsList().put(3,tempEffect);
             }
         }
     }

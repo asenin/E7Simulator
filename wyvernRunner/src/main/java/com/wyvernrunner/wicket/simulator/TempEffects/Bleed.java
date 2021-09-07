@@ -15,7 +15,7 @@ public class Bleed extends TempEffect{
     }
 
     public int getType() {
-        int type = 13;
+        type = 13;
         return type;}
 
     public int getDuration() {return this.duration;}

@@ -13,7 +13,7 @@ public class Provoke extends TempEffect {
     }
 
     public int getType() {
-        int type = 21;
+        type = 21;
         return type;
     }
 

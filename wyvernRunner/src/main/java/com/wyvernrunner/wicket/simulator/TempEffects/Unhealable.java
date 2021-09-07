@@ -13,7 +13,7 @@ public class Unhealable extends TempEffect {
     }
 
     public int getType() {
-        int type = 9;
+        type = 9;
         return type;
     }
 

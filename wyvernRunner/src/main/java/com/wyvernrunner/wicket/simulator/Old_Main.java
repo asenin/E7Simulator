@@ -6,7 +6,7 @@ import com.wyvernrunner.wicket.simulator.Monsters_W13.Naga;
 
 import java.util.*;
 
-public class Main {
+public class Old_Main {
 
     public static double tickValue; // taille de la barre de CR (exemple : si 300 speed qui est le plus rapide alors tickValue = 300 ) //
     public static Player activePlayer;

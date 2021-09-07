@@ -1,5 +1,6 @@
 package com.wyvernrunner.wicket.simulator.Heroes;
 
+import com.wyvernrunner.wicket.simulator.Monsters_W13.Wyvern;
 import com.wyvernrunner.wicket.simulator.Player;
 import com.wyvernrunner.wicket.simulator.TempEffects.IncreaseDefense;
 import com.wyvernrunner.wicket.simulator.TempEffects.Provoke;
@@ -133,9 +134,8 @@ public class Krau extends Player {
         Random r = new Random();
         int randomInt = r.nextInt(100);
         if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-            Player pl = (playerList.get(getName()));
-            pl.setNumberOftick(Math.max(0, pl.getNumberOftick() + pushbackRateSkill2up * tickValue)); // Réduit de x% le CR de la cible
-            pl.setCRinPercentage(100 * (1 - pl.getNumberOftick() / (tickValue * 100 / pl.getSpeed()))); // current CR = nb_ticks/total_ticks
+            (currentTarget).setNumberOftick(Math.max(0, (currentTarget).getNumberOftick() + pushbackRateSkill2up * tickValue)); // Réduit de x% le CR de la cible
+            (currentTarget).setCRinPercentage(100 * (1 - (currentTarget).getNumberOftick() / (tickValue * 100 / (currentTarget).getSpeed()))); // current CR = nb_ticks/total_ticks
         }
 
         // GIVE DEF BUFF TO ALL THE MEMBERS ALIVE
@@ -246,7 +246,7 @@ public class Krau extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -256,11 +256,24 @@ public class Krau extends Player {
                             }
                         }
                     }
-                } else { // non earth
+                } else if (targelement == 2) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // non earth non fire
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -270,7 +283,7 @@ public class Krau extends Player {
                         }
                     }
                 }
-            case 2 : // fire
+            case 2: // fire
                 if (targelement == 1) { // water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
@@ -279,7 +292,7 @@ public class Krau extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -289,11 +302,24 @@ public class Krau extends Player {
                             }
                         }
                     }
+                } else if (targelement == 3) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
                 } else { // non water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -303,7 +329,7 @@ public class Krau extends Player {
                         }
                     }
                 }
-            case 3 : // earth
+            case 3: // earth
                 if (targelement == 2) { // fire
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
@@ -312,7 +338,7 @@ public class Krau extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -322,11 +348,24 @@ public class Krau extends Player {
                             }
                         }
                     }
+                } else if (targelement == 1) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
                 } else { // non water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -336,11 +375,68 @@ public class Krau extends Player {
                         }
                     }
                 }
+            case 4: // dark
+                if (targelement == 5) { // 15% bonus cc to light
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // non light
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+            case 5: // light
+                if (targelement == 4) { // 15% bonus cc to dark
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // no dark
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+
             default : // dark or light
                 Random r = new Random();
                 int randomInt = r.nextInt(100);
                 if (randomInt < CC) { // crit hit
-                    return CDMG;
+                    return CDMG/100;
                 } else {
                     randomInt = r.nextInt(100);
                     if (randomInt < 30) { // strike hit
@@ -351,7 +447,6 @@ public class Krau extends Player {
                 }
         }
     }
-
 
     public static double getTargetDebuff(Player target){
         if (target.getDebuffsList().get(27) == null) {
@@ -439,13 +534,15 @@ public class Krau extends Player {
      **********************************************************/
 
     public void landS1Debuff(Player currentTarget, TempEffect tempEffect) {
-        Random r = new Random();
-        int randomInt = r.nextInt(100);
-        if (randomInt < tempEffect.rate) { // debuff effect triggers
-            randomInt = r.nextInt(100);
-            if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                currentTarget.getDebuffsList().put(21,new Provoke(tempEffect.getDuration(), tempEffect.getRate()) {
-                });
+        if (!(currentTarget instanceof Wyvern)) { // stun if not a wyvern
+            Random r = new Random();
+            int randomInt = r.nextInt(100);
+            if (randomInt < tempEffect.rate) { // debuff effect triggers
+                randomInt = r.nextInt(100);
+                if (randomInt > Math.max(currentTarget.getEffres() - getEffres(), 15)) { // bypass innate 15% ER
+                    currentTarget.getDebuffsList().put(21, new Provoke(tempEffect.getDuration(), tempEffect.getRate()) {
+                    });
+                }
             }
         }
     }

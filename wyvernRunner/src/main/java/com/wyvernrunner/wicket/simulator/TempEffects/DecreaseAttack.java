@@ -5,7 +5,7 @@ import com.wyvernrunner.wicket.simulator.Player;
 public class DecreaseAttack extends TempEffect {
 
     private int duration;
-    private double originalAtk = target.getAttack();
+    //private final double originalAtk = target.getAttack();
 
     public DecreaseAttack(int duration,double rate) {
         this.duration = duration;
@@ -13,7 +13,7 @@ public class DecreaseAttack extends TempEffect {
     }
 
     public int getType() {
-        int type = 1;
+        type = 1;
         return type;
     }
     public int getDuration() {
@@ -21,10 +21,11 @@ public class DecreaseAttack extends TempEffect {
     }
 
     public void applyEffects(Player caster, Player target){
-        target.setAttack(target.getAttack()-originalAtk*0.5);
+        //target.setAttack(target.getAttack()-originalAtk*0.5);
     }
 
-    public void resetEffects(Player caster, Player target) {target.setAttack(target.getAttack()+originalAtk*0.5);
+    public void resetEffects(Player caster, Player target) {
+        //target.setAttack(target.getAttack()+originalAtk*0.5);
     }
 
     public void reduceDuration(){

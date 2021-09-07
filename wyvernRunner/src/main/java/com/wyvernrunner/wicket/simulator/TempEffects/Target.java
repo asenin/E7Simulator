@@ -11,7 +11,7 @@ public class Target extends TempEffect {
     }
 
     public int getType() {
-        int type = 27;
+        type = 27;
         return type;
     }
 

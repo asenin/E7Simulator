@@ -1,8 +1,10 @@
 package com.wyvernrunner.wicket.simulator;
 
 import com.wyvernrunner.wicket.simulator.Heroes.*;
+import com.wyvernrunner.wicket.simulator.Interfaces.IFocus;
 import com.wyvernrunner.wicket.simulator.Monsters_W13.Dragona;
 import com.wyvernrunner.wicket.simulator.Monsters_W13.Naga;
+import com.wyvernrunner.wicket.simulator.Monsters_W13.Wyvern;
 import com.wyvernrunner.wicket.simulator.TempEffects.*;
 
 
@@ -24,172 +26,271 @@ public class Game {
     public static ArrayList<String> listE1 = new ArrayList<>(); // store names of the target lists of wave 1
     public static Player front;
     public static boolean wyvernAlive = true; // true = dead / false = alive
+    private ArrayList<Integer> dualArray = new ArrayList<>(); // contains every possibility for dual attacks
+    private static boolean firstTurn = true;
 
 
     public Game(){
-        // default constructor
+
     }
 
 
     public static void main(String[] args) {
+
+        double victory = 0;
+
+
+
         long startTime = System.nanoTime(); // start
-
-
-
-        /**********************************************************
-         *                     WAVE 1 START                       *
-         **********************************************************/
-
-        // Initiate the wave 1
-        initGame(playerList);
-
-        //Player p1 = new Alexa("Alexa",200,true,1400,1500,25000,35,160,65,120,5,4);
-        //p1.skillAI(currentTarget, playerList);
-
-        /*
-        System.out.println("listA size is :" + listA.size());
-        System.out.println("listE1 size is :" + listE1.size());
-         */
-
-
-        /**********************************************************
-         *                     FIGHT STARTS                       *
-         **********************************************************/
-
-
-        while (listE1.size() > 0 && listA.size() > 0) { // WAVE 1 stops whenever one list is empty
-            // simule le déroulement des tours de jeu ( 1 tour = 1 personnage à 100% ) // boucler sur le nombre de joueurs vivants
-            //displayCR(playerList)
-
-            // simulate every unit turn
-            CRcounter(playerList); // print each unit CR
-            // activePlayer est attribué
+        int loop = 0;
+        while (loop < 100000) {
 
             /**********************************************************
-             *              CHECK ALLY OR ENEMY TURN                  *
+             *                     WAVE 1 START                       *
              **********************************************************/
+            playerList.clear();
+            deadplayerList.clear();
+            listE1.clear();
+            listA.clear();
 
-            if(activePlayer.getTeam() == 0){ // 0 = ally
-                updateDeadList(listA);
-            } else { // 1 = enemy
-                updateDeadList(listE1);
-            }
+            // Initiate the wave 1
+            initGame(playerList);
 
-            /**********************************************************
-             *         CHECK TICK DEBUFF BEFORE TURN STARTS           *
-             **********************************************************/
+            //Player p1 = new Alexa("Alexa",200,true,1400,1500,25000,35,160,65,120,5,4);
+            //p1.skillAI(currentTarget, playerList);
 
-            for (Iterator<TempEffect> iterator = activePlayer.getTickDamageList().iterator(); iterator.hasNext();) {
-                TempEffect effect = iterator.next();
-                effect.applyEffects(effect.getCaster(),effect.getTarget());
-                effect.reduceDuration(); // reduce duration by 1 turn
-                if (effect.duration == 0){
-                    iterator.remove(); // remove the debuff if duration = 0
-                }
-            }
+                /*
+                System.out.println("listA size is :" + listA.size());
+                System.out.println("listE1 size is :" + listE1.size());
+                 */
 
 
             /**********************************************************
-             *         CHECK IF PLAYER IS ALIVE AFTER TICKS           *
+             *                     FIGHT STARTS                       *
              **********************************************************/
 
-            if (activePlayer.getAlive()) { // if he is alive after the debuffs applied on him (poison, burn, etc...)
-                //System.out.println(activePlayer.getName() + "'s turn !");
 
-                /**********************************************************
-                 *                       ALLY TURN                        *
-                 **********************************************************/
+            while (listE1.size() > 0 && listA.size() > 0) { // WAVE 1 stops whenever one list is empty
+                // simule le déroulement des tours de jeu ( 1 tour = 1 personnage à 100% ) // boucler sur le nombre de joueurs vivants
+                //displayCR(playerList)
 
-                if (activePlayer.getTeam() == 0 ) { // hero attacking
-                    Player currentTarget = getLowHP(listE1);
-                    activePlayer.skillAI(currentTarget,playerList,tickValue,listA,listE1); // if the current player is a hero, attacks a monster
-
-
-                    updateDeadList(listE1); // update enemy alive list
-
+                // simulate every unit turn
+                CRcounter(playerList); // print each unit CR
+                // activePlayer est attribué
 
 
                 /**********************************************************
-                 *                      ENEMY TURN                        *
+                 *         CHECK TICK DEBUFF BEFORE TURN STARTS           *
                  **********************************************************/
 
-                } else { // monster attacking
-                    Player currentTarget = getTarget(listA); // find a target among allies
-                    activePlayer.skillAI(currentTarget,playerList,tickValue,listA,listE1); // if the current player is a monster, attacks a hero
+                updateTickStatus(activePlayer);
 
-                    if (currentTarget instanceof GeneralPurrgis) {
-                        for (String player : listA) {
-                            Player pl = playerList.get(player);
-                            pl.setNumberOftick(Math.max(0, pl.getNumberOftick() - 0.16 * tickValue)); // actualise la CR bar de tout le monde en décalant tout le monde
-                            // avec le push de GPurrgis
-                            pl.setCRinPercentage(100 * (1 - pl.getNumberOftick() / (tickValue * 100 / pl.getSpeed())));
+                /**********************************************************
+                 *         CHECK IF PLAYER IS ALIVE AFTER TICKS           *
+                 **********************************************************/
+
+                if (activePlayer.getAlive()) { // if he is alive after the debuffs applied on him (poison, burn, etc...)
+                    //System.out.println(activePlayer.getName() + "'s turn !");
+
+                    /**********************************************************
+                     *                       ALLY TURN                        *
+                     **********************************************************/
+
+                    if (activePlayer.getTeam() == 0) { // hero attacking
+                        Player currentTarget = getLowHP(listE1);
+                        activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1); // if the current player is a hero, attacks a monster
+
+
+                        updateDeadList(listE1); // update enemy alive list
+
+
+                        /**********************************************************
+                         *                      ENEMY TURN                        *
+                         *******************************************************
+                         * ***/
+
+                    } else { // monster attacking
+                        Player currentTarget = getTarget(listA); // find a target among allies
+                        activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1); // if the current player is a monster, attacks a hero
+
+                        if (currentTarget instanceof GeneralPurrgis) {
+                            for (String player : listA) {
+                                Player pl = playerList.get(player);
+                                // actualise la CR bar de tout le monde en décalant tout le monde avec le push de GPurrgis
+                                pl.setCRinPercentage(pl.getCRinPercentage() + 16);
+                            }
                         }
-                    }
 
-                    if (currentTarget instanceof SeasideBellona) {
-                        // depending on the stacks
-                        if (((SeasideBellona) currentTarget).getS2stacks() > 4) { // If the target was SeasideBellona, we check the nb of stacks
-                            ((SeasideBellona) currentTarget).skill2(listE1,playerList); // Use S2
-                            ((SeasideBellona) currentTarget).setS2stacks(0); // reset stacks
+                        for (String Focusunit : listA) {
+                            if (playerList.get(Focusunit) instanceof IFocus) {
+                                // depending on the stacks
+                                if (((IFocus) playerList.get(Focusunit)).getFocus() > 4) { // If the target was SeasideBellona, we check the nb of stacks
+                                    ((IFocus) playerList.get(Focusunit)).triggerFocus(playerList.get(Focusunit), playerList, tickValue, listA, listE1); // Use S2
+                                    ((IFocus) playerList.get(Focusunit)).setFocus(0); // reset stacks
+                                }
+                            }
                         }
-                    }
 
-                    updateDeadList(listA); // update allies alive list
+
+                        updateDeadList(listA); // update allies alive list
+                    }
                 }
+
+                /**********************************************************
+                 *         REDUCE DURATION OF BUFFS & DEBUFFS             *
+                 **********************************************************/
+
+                updateTempEffect(activePlayer);
+
+                /**********************************************************
+                 *              CHECK ALLY OR ENEMY TURN                  *
+                 **********************************************************/
+
+                updateDeadStatus(activePlayer);
+
+                /**********************************************************
+                 *                     END OF A TURN                      *
+                 **********************************************************/
+
+            }
+            // end of the wave 1 fight
+
+            /**********************************************************
+             *                    END OF A WAVE 1                     *
+             **********************************************************/
+            /*
+            for (Map.Entry player : deadplayerList.entrySet()) {
+                Player pl = (Player) player.getValue();
+                System.out.println(pl.getName() + " has " + pl.getHealth() + " HP");
+            }
+
+             */
+
+
+            /**********************************************************
+             *                   BOSS FIGHT START                     *
+             **********************************************************/
+
+            initBoss(); // prepare fight against boss - reduce 1 turn buff/debuff, add wyvern on listE and playerlist
+
+            while (listE1.size() > 0 && listA.size() > 0) {
+
+                // simulate every unit turn
+                CRcounter(playerList); // print each unit CR
+                // activePlayer est attribué
+                /**********************************************************
+                 *         CHECK TICK DEBUFF BEFORE TURN STARTS           *
+                 **********************************************************/
+
+                updateTickStatus(activePlayer);
+
+                /**********************************************************
+                 *         CHECK IF PLAYER IS ALIVE AFTER TICKS           *
+                 **********************************************************/
+
+                if (activePlayer.getAlive()) { // if he is alive after the debuffs applied on him (poison, burn, etc...)
+                    //System.out.println(activePlayer.getName() + "'s turn !");
+
+                    /**********************************************************
+                     *                       ALLY TURN                        *
+                     **********************************************************/
+
+                    if (activePlayer.getTeam() == 0) { // hero attacking
+                        Player currentTarget = getLowHP(listE1);
+                        activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1); // if the current player is a hero, attacks a monster
+
+                        if (activePlayer.getElement() != 1) { // if active player is not water, Wyvern self CR pushes 20%
+                            for (String player : listE1) { // only wyvern
+                                Player pl = playerList.get(player);
+                                // actualise la CR bar de tout le monde en décalant tout le monde avec le push de GPurrgis
+                                pl.setCRinPercentage(pl.getCRinPercentage() + 16);
+                            }
+                        }
+
+                        updateDeadList(listE1); // update enemy alive list
+
+
+                        /**********************************************************
+                         *                      WYVERN TURN                       *
+                         **********************************************************/
+
+                    } else { // monster attacking
+                        Player currentTarget = getWyvernTarget(listA, listE1, tickValue); // find a target among allies
+                        if (activePlayer.getShield() > 0 && activePlayer instanceof Wyvern) {
+                            ((Wyvern) activePlayer).skill2blow(playerList, tickValue, listA, listE1); // if wyvern has shield, it means it's time to blow entire team
+                        } else {
+                            activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1); // if the current player is a monster, attacks a hero
+                        }
+                        if (currentTarget instanceof GeneralPurrgis && currentTarget.getHealth() > 0) { // if target is GP and alive
+                            for (String player : listA) {
+                                Player pl = playerList.get(player);
+                                pl.setNumberOftick(Math.max(0, pl.getNumberOftick() - 0.16 * tickValue)); // actualise la CR bar de tout le monde en décalant tout le monde
+                                // avec le push de GPurrgis
+                                pl.setCRinPercentage(100 * (1 - pl.getNumberOftick() / (tickValue * 100 / pl.getSpeed())));
+                            }
+                        }
+
+                        if (currentTarget instanceof IFocus) {
+                            // depending on the stacks
+                            if (((IFocus) currentTarget).getFocus() > 4) { // If the target was SeasideBellona, we check the nb of stacks
+                                ((IFocus) currentTarget).triggerFocus(currentTarget, playerList, tickValue, listA, listE1); // Use S2
+                                ((IFocus) currentTarget).setFocus(0); // reset stacks
+                            }
+                        }
+
+                        updateDeadList(listA); // update allies alive list
+                    }
+                }
+
+                /**********************************************************
+                 *         REDUCE DURATION OF BUFFS & DEBUFFS             *
+                 **********************************************************/
+
+                updateTempEffect(activePlayer);
+
+                /**********************************************************
+                 *              CHECK ALLY OR ENEMY TURN                  *
+                 **********************************************************/
+
+                updateDeadStatus(activePlayer);
+
+                /**********************************************************
+                 *                     END OF A TURN                      *
+                 **********************************************************/
+
             }
 
             /**********************************************************
-             *         REDUCE DURATION OF BUFFS & DEBUFFS             *
+             *                    END OF THE FIGHT                    *
              **********************************************************/
 
-            // DEBUFFS
-            TempEffect i;
-            Iterator<Map.Entry<Integer, TempEffect>> it = activePlayer.getDebuffsList().entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<Integer, TempEffect> pair = it.next();
-                i = pair.getValue(); // i = TempEffect
-                if (i != null) {
-                    if (i.duration > 0) {
-                        i.setDuration(i.getDuration()-1); //
-                        if (i.duration == 0) {
-                            i.resetEffects(activePlayer,activePlayer); // caster,currentTarget : current target is the one resetting the debuff, ignore waster
-                        }
-                    }
-                }
+            /*
+            for (Map.Entry player : deadplayerList.entrySet()) {
+                Player pl = (Player) player.getValue();
+                System.out.println(pl.getName() + " has " + pl.getHealth() + " HP");
+            }
+             */
+
+
+            if (listE1.size() < 1) {
+                victory++;
             }
 
-            // BUFFS
-            it = activePlayer.getBuffsList().entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<Integer, TempEffect> pair = it.next();
-                i = pair.getValue(); // i = TempEffect
-                if (i != null) {
-                    if (i.duration > 0) {
-                        i.setDuration(i.getDuration()-1);
-                    }
-                }
-            }
+            //System.out.println("--------------------");
 
-
-            /**********************************************************
-             *                     END OF A TURN                      *
-             **********************************************************/
-
+            loop++;
 
         }
-
         long endTime = System.nanoTime();
         // get difference of two nanoTime values
         long timeElapsed = endTime - startTime;
         System.out.println("Execution time in nanoseconds  : " + timeElapsed);
         System.out.println("Execution time in milliseconds : " + timeElapsed / 1000000);
+        System.out.println("Winrate against wave 1 + wyvern is : " + (victory/100000)*100 + "%");
 
-        /*
-        for (Map.Entry player : playerList.entrySet()) {
-            Player pl = (Player) player.getValue();
-            System.out.println(pl.getName() + " has " + pl.getHealth() + " HP");
-        }
-        */
+
+
+
         /*
         System.out.println("listA size is :" + listA.size());
         System.out.println("listE1 size is :" + listE1.size());
@@ -206,15 +307,16 @@ public class Game {
 
     }
 
-    private static void updateDeadList(ArrayList<String> listE1) {
-        for (Iterator<String> iterator = listE1.iterator(); iterator.hasNext(); ) {
+    private static void updateDeadList(ArrayList<String> list) {
+        for (Iterator<String> iterator = list.iterator(); iterator.hasNext(); ) {
             String deadName = iterator.next();
             if (playerList.get(deadName).getHealth() <= 0) {
                 playerList.get(deadName).setAlive(false); // considers dead /
                 // System.out.println(deadName + " is dead ");
-                iterator.remove(); // remove the monster from listE1
                 deadplayerList.put(deadName,playerList.get(deadName));
                 playerList.remove(deadName);
+                iterator.remove(); // remove the player from list
+
             }
 
         }
@@ -253,6 +355,11 @@ public class Game {
                 }
             }
 
+            // pl.setNumberOftick((100 - pl.getCRinPercentage()) / (pl.getSpeed() / tickValue)); // nombre de ticks à réaliser pour att
+            // pl.setNumberOftick(pl.getNumberOftick() - jumpCRbar); // actualise la CR bar de tout le monde en décalant tout le monde linéairement
+            // pl.setCRinPercentage(100 * (1 - pl.getNumberOftick() / (tickValue * 100 / pl.getSpeed()))); // current CR = nb_ticks/total_ticks
+
+
             // Jump to the next step by removing from everyone NumberOfTick value
             for (Map.Entry player : playerList.entrySet()) { // Sort the list of speeds to get the fastest unit
                 Player pl = (Player) player.getValue();
@@ -267,20 +374,19 @@ public class Game {
         }
     }
 
-
     public static void initGame(Map<String,Player> playerList) {
         // Hero
         Player p1 = new GeneralPurrgis("GeneralPurrgis", 152, true, 1365, 1727, 23275, 37, 162, 12, 106, 5,5, 0,0);
-        Player p2 = new Alexa("Alexa", 116, true, 2690, 812, 7400, 89, 306, 82, 9, 5,1, 0,0);
-        Player p3 = new Luluca("Luluca", 204, true, 1786, 1056, 6237, 64, 277, 88, 14, 13,1, 0,0);
+        Player p2 = new Alexa("Alexa", 116, true, 2690, 812, 7400, 89, 306, 82, 9, 5, 1, 0, 0);
+        Player p3 = new Luluca("Luluca" , 204, true, 1786, 1056, 6237, 64, 277, 88, 14, 13, 1, 0, 0);
         Player p4 = new SeasideBellona("SeasideBellona", 126, true, 3426, 1126, 13839, 94, 308, 63, 0, 5,1, 0,0);
 
 
         // Monster
-        Player p5 = new Dragona("Dragona1", 154, true, 5294, 1392, 20241, 50, 150, 0, 0, 5,2,1,0);
-        Player p6 = new Dragona("Dragona2", 154, true, 5294, 1392, 20241, 50, 150, 0, 0, 5,2,1,0);
-        Player p7 = new Naga("Naga", 175, true, 2800, 1340, 13354, 50, 150, 0, 0, 5,2,1,0);
-        //Player p8 = new Monster("Wyvern",242,true,6835,1940,233578,50,150,0,80,5,2);
+        Player p5 = new Dragona("Dragona1", 175, true, 5294, 1392, 20241, 50, 150, 0, 0, 5,2,1,0);
+        Player p6 = new Dragona("Dragona2", 175, true, 5294, 1392, 20241, 50, 150, 0, 0, 5,2,1,0);
+        Player p7 = new Naga("Naga", 154, true, 2800, 1340, 13354, 50, 150, 0, 0, 5,2,1,0);
+
 
 
         // Add heroes on data
@@ -316,21 +422,170 @@ public class Game {
         }
     }
 
-    public static Player getLowHP(ArrayList<String> list) { // return the player with the lowest hp
-        double perc = playerList.get(list.get(0)).getHealth() * 100 / playerList.get(list.get(0)).getMaxhp();
-        Player pl = playerList.get(list.get(0)) ;
+    public static void initBoss(){
+        listE1.clear(); // clear the list of ennemies
+        // boss has entered the chat
+        Player p8 = new Wyvern("Wyvern",242,true,6835,1940,233578,50,150,100,80,5,2,1,0);
 
-        for (int i = 1; i < list.size(); i++) {
-            double p = playerList.get(list.get(i)).getHealth() * 100 / playerList.get(list.get(i)).getMaxhp();
-            if ( p < perc) { // we get the %
-                perc = p;
-                pl = playerList.get(list.get(i));
+        // add the boss on the
+        playerList.put(p8.getName(), p8);
+        listE1.add(p8.getName());
+
+        setCRBar(playerList); // permet de setup le paramètre tickvalue qui setup les variables CR/% pour chaque personnage
+
+        for (Player player : playerList.values()) { // setup first turn
+            double minRNG = 0.00;
+            double maxRNG = 5.00;
+            double random = new Random().nextDouble();
+            player.setCRinPercentage((player.getSpeed() * 100 / tickValue)+(minRNG + (random * (maxRNG - minRNG)))); // initialise la valeur et facilite l'affichage
+            player.setNumberOftick(100 / (player.getSpeed() / tickValue)); //
+        }
+
+        // reduce duration of debuffs by 1 turn
+
+        for (Iterator<String> iterator = listA.iterator(); iterator.hasNext(); ) {
+            String player = iterator.next();
+            TempEffect i;
+            // DEBUFFS
+
+            Iterator<Map.Entry<Integer, TempEffect>> it = playerList.get(player).getDebuffsList().entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Integer, TempEffect> pair = it.next();
+                i = pair.getValue(); // i = TempEffect
+                if (i != null) {
+                    if (i.duration > 0) {
+                        i.setDuration(i.getDuration() - 1); //
+                        if (i.duration == 0) {
+                            //i.resetEffects(activePlayer, activePlayer); // caster,currentTarget : current target is the one resetting the debuff
+                            pair.setValue(null); // reset
+                        }
+                    }
+                }
+            }
+
+            // BUFFS
+            it = playerList.get(player).getBuffsList().entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Integer, TempEffect> pair = it.next();
+                i = pair.getValue(); // i = TempEffect
+                if (i != null) {
+                    if (i.duration > 0) {
+                        i.setDuration(i.getDuration() - 1);
+                        if (i.duration == 0) {
+                            //i.resetEffects(activePlayer, activePlayer); // caster,currentTarget : current target is the one resetting the buff
+                            pair.setValue(null); // reset
+                        }
+                    }
+                }
             }
         }
-        return pl;
+
+        for (Iterator<String> iterator = listA.iterator(); iterator.hasNext(); ) {
+            String player = iterator.next();
+            Iterator<Map.Entry<Integer, TempEffect>> pl_it = playerList.get(player).getBuffsList().entrySet().iterator();
+            while (pl_it.hasNext()) {
+                Map.Entry<Integer, TempEffect> pair = pl_it.next();
+                TempEffect j = pair.getValue(); // i is a buff
+                if (j != null) {
+                    if (j.duration > 0) {
+                        j = null; // reset all debuffs
+                    }
+                }
+            }
+        }
     }
 
-    public static Player getTarget(ArrayList<String> list){
+    public static void updateTempEffect(Player activePlayer){
+
+        // DEBUFF
+        TempEffect i;
+        Iterator<Map.Entry<Integer, TempEffect>> it = activePlayer.getDebuffsList().entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Integer, TempEffect> pair = it.next();
+            i = pair.getValue(); // i = TempEffect
+            if (i != null) {
+                if (i.duration > 0) {
+                    i.setDuration(i.getDuration() - 1); //
+                    if (i.duration == 0) {
+                        //i.resetEffects(activePlayer, activePlayer); // caster,currentTarget : current target is the one resetting the debuff, ignore caster
+                        pair.setValue(null); // reset
+                    }
+                }
+            }
+        }
+
+        // BUFFS
+        it = activePlayer.getBuffsList().entrySet().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry<Integer, TempEffect> pair = it.next();
+            i = pair.getValue(); // i = TempEffect
+            if (i != null) {
+                if (i.duration > 0) {
+                    i.setDuration(i.getDuration() - 1);
+                    if (i.duration == 0) {
+                        //i.resetEffects(activePlayer, activePlayer); // caster,currentTarget : current target is the one resetting the debuff, ignore caster
+                        pair.setValue(null); // reset
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    public static void updateDeadStatus(Player activePlayer){
+        if (activePlayer.getTeam() == 0) {
+            // 0 = ally
+            updateDeadList(listA);
+        } else {
+            // 1 = enemy
+            updateDeadList(listE1);
+        }
+    }
+
+    public static void updateTickStatus(Player activePlayer){
+        for (Iterator<TempEffect> iterator = activePlayer.getTickDamageList().iterator(); iterator.hasNext(); ) {
+            TempEffect effect = iterator.next();
+            effect.applyEffects(effect.getCaster(), effect.getTarget());
+            effect.reduceDuration(); // reduce duration by 1 turn
+            if (effect.duration == 0) {
+                iterator.remove(); // remove the debuff if duration = 0
+            }
+        }
+    }
+
+    public static Player getLowHP(ArrayList<String> list) { // return the monster with the lowest hp
+        double perc = playerList.get(list.get(0)).getHealth() / playerList.get(list.get(0)).getMaxhp();
+        Player pl = playerList.get(list.get(0));
+
+        // check if everyone has same amount of hp
+        boolean equalHP = true;
+        for (String s : list) {
+            if ((playerList.get(s).getHealth() / playerList.get(list.get(0)).getMaxhp() != perc) ){ // if not all equals to % hp
+                equalHP = false;
+            }
+        }
+
+        if (equalHP) {
+            // if yes, pick a random enemy
+            Random r = new Random();
+            int randomInt = r.nextInt(listE1.size());
+            return playerList.get(list.get(randomInt));
+        } else { // return the enemy with the lowest HP
+            for (int i = 1; i < list.size(); i++) {
+                double p = playerList.get(list.get(i)).getHealth() / playerList.get(list.get(i)).getMaxhp();
+                if (p < perc) { // we get the %
+                    perc = p;
+                    pl = playerList.get(list.get(i));
+                }
+            }
+            return pl;
+        }
+
+    }
+
+    public static Player getTarget(ArrayList<String> list){ // return the ally to target for monsters
         double randNumber = Math.random();
         randNumber = randNumber * 100;
         if (front.getAlive()){ // if he is alive
@@ -351,6 +606,40 @@ public class Game {
         } else { // front is dead everyone has the same chance to get targeted
             int index = new Random().nextInt(list.size()); // generate [0,list.size]
             return playerList.get(list.get(index)); // get the player with the name
+        }
+    }
+
+    public static Player getWyvernTarget(ArrayList<String> listA, ArrayList<String> listE1, double tickvalue){
+        if (firstTurn){ // case first turn
+            if (tickvalue == playerList.get(listE1.get(0)).getSpeed() ){
+                firstTurn = false;
+                return front;
+            } else {
+                return getTarget(listA);
+            }
+        } else { // other normal turns
+            int numberOfDebuffs = 0;
+            // COUNT NUMBER OF TICK DAMAGE DEBUFF
+            for (TempEffect element : playerList.get(listE1.get(0)).getTickDamageList()) {
+                numberOfDebuffs++;
+            }
+            // COUNT NUMBER OF UNIQUE DEBUFF
+            TempEffect i;
+            Iterator<Map.Entry<Integer, TempEffect>> it = playerList.get(listE1.get(0)).getDebuffsList().entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Integer, TempEffect> pair = it.next();
+                i = pair.getValue(); // i = TempEffect
+                if (i != null){
+                    if (i.duration >0){
+                        numberOfDebuffs++;
+                    }
+                }
+            }
+            if (numberOfDebuffs >2){
+                return front;
+            } else {
+                return getTarget(listA);
+            }
         }
     }
 
@@ -411,34 +700,5 @@ public class Game {
     }
 
      */
-
-    // naga skill 2 ratio = 1.3
-    // draguna skill 2 ratio = 1.4
-
-
-    //((this.getAtk(skillId)*rate + flatMod)*dmgConst + flatMod2) * pow * skillEnhance * elemAdv * target * dmgMod;
-    // ((1-dmgReduc)*(1-dmgTrans))/(((this.def / 300)*this.getPenetration(skill)) + 1);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

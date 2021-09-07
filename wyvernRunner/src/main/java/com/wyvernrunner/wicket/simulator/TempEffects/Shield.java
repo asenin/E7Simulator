@@ -2,11 +2,11 @@ package com.wyvernrunner.wicket.simulator.TempEffects;
 
 import com.wyvernrunner.wicket.simulator.Player;
 
-public class DecreaseDefense extends TempEffect {
+public class Shield extends TempEffect {
 
     private int duration;
 
-    public DecreaseDefense(int duration,double rate, Player caster, Player target) {
+    public Shield(int duration,double rate,Player caster,Player target) {
         this.duration = duration;
         this.rate = rate*100;
         this.caster = caster;
@@ -14,7 +14,7 @@ public class DecreaseDefense extends TempEffect {
     }
 
     public int getType(){
-        type = 3;
+        type = 18;
         return type;
     }
     public int getDuration(){
@@ -22,12 +22,10 @@ public class DecreaseDefense extends TempEffect {
     }
 
     public void applyEffects(Player caster, Player target){
-        //target.setDefense(target.getDefense()*0.3);
+
     }
 
-    public void resetEffects(Player caster, Player target) {
-        //target.setDefense(target.getDefense()/0.3);
-    }
+    public void resetEffects(Player caster, Player target) {target.setShield(0); }
 
     public void reduceDuration(){
         duration--;

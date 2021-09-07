@@ -292,7 +292,7 @@ public class Chloe extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -302,11 +302,24 @@ public class Chloe extends Player {
                             }
                         }
                     }
-                } else { // non earth
+                } else if (targelement == 2) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // non earth non fire
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -316,7 +329,7 @@ public class Chloe extends Player {
                         }
                     }
                 }
-            case 2 : // fire
+            case 2: // fire
                 if (targelement == 1) { // water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
@@ -325,7 +338,7 @@ public class Chloe extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -335,11 +348,24 @@ public class Chloe extends Player {
                             }
                         }
                     }
+                } else if (targelement == 3) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
                 } else { // non water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -349,7 +375,7 @@ public class Chloe extends Player {
                         }
                     }
                 }
-            case 3 : // earth
+            case 3: // earth
                 if (targelement == 2) { // fire
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
@@ -358,7 +384,7 @@ public class Chloe extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -368,11 +394,24 @@ public class Chloe extends Player {
                             }
                         }
                     }
+                } else if (targelement == 1) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
                 } else { // non water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -382,11 +421,68 @@ public class Chloe extends Player {
                         }
                     }
                 }
+            case 4: // dark
+                if (targelement == 5) { // 15% bonus cc to light
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // non light
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+            case 5: // light
+                if (targelement == 4) { // 15% bonus cc to dark
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // no dark
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+
             default : // dark or light
                 Random r = new Random();
                 int randomInt = r.nextInt(100);
                 if (randomInt < CC) { // crit hit
-                    return CDMG;
+                    return CDMG/100;
                 } else {
                     randomInt = r.nextInt(100);
                     if (randomInt < 30) { // strike hit

@@ -1,5 +1,6 @@
 package com.wyvernrunner.wicket.simulator.Heroes;
 
+import com.wyvernrunner.wicket.simulator.Interfaces.IFocus;
 import com.wyvernrunner.wicket.simulator.Monsters_W13.Wyvern;
 import com.wyvernrunner.wicket.simulator.Player;
 import com.wyvernrunner.wicket.simulator.TempEffects.*;
@@ -9,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class SeasideBellona extends Player {
+public class SeasideBellona extends Player implements IFocus {
 
     /**********************************************************
      *                    SKILL RATIOS                        *
@@ -25,7 +26,7 @@ public class SeasideBellona extends Player {
     private double EnhanceModSkill2 = 0.2;
     private double breakdefRateSkill2up = 0.5;
 
-    private double S2stacks=0;
+    private int S2stacks=0;
 
     private double rateSkill3up = 1.0;
     private double powSkill3 = 1.0;
@@ -106,7 +107,7 @@ public class SeasideBellona extends Player {
         }
         landS1Debuff(currentTarget,new Target(2,targetRateSkill1up)); // 1 turn taunt
 
-        S2stacks++; // get one S2 stack
+        setFocus(1); // get one S2 stack
     }
 
     public void skill2(ArrayList<String> listE1,Map<String, Player> playerList) {
@@ -131,7 +132,7 @@ public class SeasideBellona extends Player {
 
             // DEBUFF
 
-            landS2Debuff(currentTarget, new DecreaseDefense(2, breakdefRateSkill2up)); // 2 turns unhealable and 2 turns unbuffable implemented in this method
+            landS2Debuff(currentTarget, new DecreaseDefense(2,breakdefRateSkill2up,playerList.get(getName()),currentTarget)); // 2 turns unhealable and 2 turns unbuffable implemented in this method
         }
     }
 
@@ -164,7 +165,7 @@ public class SeasideBellona extends Player {
             landS3Debuff(currentTarget,new Target(2,S3DebuffsRateSkill3up)); // 2 turns unhealable and 2 turns unbuffable implemented in this method
         }
 
-        S2stacks = S2stacks+3; // get 3 S2 stacks
+        setFocus(getFocus() + 3); // get 3 S2 stacks
 
         cdSkill3 = cdGlobalSkill3; // put the skill on CD
     }
@@ -223,7 +224,6 @@ public class SeasideBellona extends Player {
         }
     }
 
-
     public static double getFlat2Mod(Player target){ // DDJ?
         return target.getMaxhp()*0.03;
     }
@@ -247,7 +247,7 @@ public class SeasideBellona extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG/100;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -257,11 +257,24 @@ public class SeasideBellona extends Player {
                             }
                         }
                     }
-                } else { // non earth
+                } else if (targelement == 2) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // non earth non fire
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG/100;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -271,7 +284,7 @@ public class SeasideBellona extends Player {
                         }
                     }
                 }
-            case 2 : // fire
+            case 2: // fire
                 if (targelement == 1) { // water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
@@ -280,7 +293,7 @@ public class SeasideBellona extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG/100;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -290,11 +303,24 @@ public class SeasideBellona extends Player {
                             }
                         }
                     }
+                } else if (targelement == 3) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
                 } else { // non water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG/100;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -304,7 +330,7 @@ public class SeasideBellona extends Player {
                         }
                     }
                 }
-            case 3 : // earth
+            case 3: // earth
                 if (targelement == 2) { // fire
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
@@ -313,7 +339,7 @@ public class SeasideBellona extends Player {
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < CC) { // crit hit
-                            return CDMG/100;
+                            return CDMG / 100;
                         } else {
                             randomInt = r.nextInt(100);
                             if (randomInt < 30) { // strike hit
@@ -323,11 +349,24 @@ public class SeasideBellona extends Player {
                             }
                         }
                     }
+                } else if (targelement == 1) { // 15% bonus cc to fire
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
                 } else { // non water
                     Random r = new Random();
                     int randomInt = r.nextInt(100);
                     if (randomInt < CC) { // crit hit
-                        return CDMG/100;
+                        return CDMG / 100;
                     } else {
                         randomInt = r.nextInt(100);
                         if (randomInt < 30) { // strike hit
@@ -337,6 +376,63 @@ public class SeasideBellona extends Player {
                         }
                     }
                 }
+            case 4: // dark
+                if (targelement == 5) { // 15% bonus cc to light
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // non light
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+            case 5: // light
+                if (targelement == 4) { // 15% bonus cc to dark
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC + 15) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                } else { // no dark
+                    Random r = new Random();
+                    int randomInt = r.nextInt(100);
+                    if (randomInt < CC) { // crit hit
+                        return CDMG / 100;
+                    } else {
+                        randomInt = r.nextInt(100);
+                        if (randomInt < 30) { // strike hit
+                            return 1.3;
+                        } else {
+                            return 1.0;
+                        }
+                    }
+                }
+
             default : // dark or light
                 Random r = new Random();
                 int randomInt = r.nextInt(100);
@@ -436,12 +532,16 @@ public class SeasideBellona extends Player {
         this.cdSkill3 = cdSkill3;
     }
 
-    public double getS2stacks() {
+    public int getFocus(){
         return S2stacks;
     }
 
-    public void setS2stacks(double s2stacks) {
-        S2stacks = s2stacks;
+    public void setFocus(int focus){
+        S2stacks = focus;
+    }
+
+    public void triggerFocus(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1) {
+        skill2( listE1, playerList);
     }
 
 
@@ -455,7 +555,7 @@ public class SeasideBellona extends Player {
         if (randomInt < tempEffect.rate) { // debuff effect triggers
             randomInt = r.nextInt(100);
             if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                currentTarget.getDebuffsList().put(27,new Target(tempEffect.getDuration(), tempEffect.getRate()));
+                currentTarget.getDebuffsList().put(27,tempEffect);
             }
         }
     }
@@ -466,7 +566,7 @@ public class SeasideBellona extends Player {
         if (randomInt < tempEffect.rate) { // debuff effect triggers
             randomInt = r.nextInt(100);
             if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                currentTarget.getDebuffsList().put(3,new DecreaseDefense(tempEffect.getDuration(), tempEffect.getRate()));
+                currentTarget.getDebuffsList().put(3,tempEffect);
             }
         }
     }
@@ -477,14 +577,14 @@ public class SeasideBellona extends Player {
         if (randomInt < tempEffect.rate) { // debuff effect triggers
             randomInt = r.nextInt(100);
             if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                currentTarget.getDebuffsList().put(9,new Unhealable(tempEffect.duration, tempEffect.rate));
+                currentTarget.getDebuffsList().put(9,tempEffect);
             }
         }
         randomInt = r.nextInt(100);
         if (randomInt < tempEffect.duration) { // debuff effect triggers
             randomInt = r.nextInt(100);
             if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                currentTarget.getDebuffsList().put(15,new Unbuffable(tempEffect.duration, tempEffect.rate));
+                currentTarget.getDebuffsList().put(15,tempEffect);
             }
         }
     }
