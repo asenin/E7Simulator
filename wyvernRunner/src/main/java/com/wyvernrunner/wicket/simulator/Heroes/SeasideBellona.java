@@ -61,7 +61,7 @@ public class SeasideBellona extends Player implements IFocus {
      **********************************************************/
 
 
-    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1) {
+    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1,ArrayList<String> dualList) {
         if ((DebuffsList.get(7) != null) && (DebuffsList.get(7).duration > 0)) { // if stunned
             // doesn't do anything because stunned
             if (cdSkill3 > 0) { // reduce cd of S3 by 1
@@ -75,9 +75,21 @@ public class SeasideBellona extends Player implements IFocus {
             if (cdSkill3 == 0) {
                 skill3(listE1,playerList);
             } else { // reduce cd of S3 by 1
-                skill1(currentTarget);
+                Random r = new Random();
+                int randomInt = r.nextInt(dualList.size());
+                if (dualList.get(randomInt).equals("N") || listA.size() < 2){
+                    skill1(currentTarget);
+                } else {
+                    skill1(currentTarget);
+                    skillDual(currentTarget,playerList,tickValue,listA,listE1, dualList);
+                }
+
             }
         }
+    }
+
+    public void skillDual(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
+        skill1(currentTarget);
     }
 
     /**********************************************************
@@ -93,7 +105,7 @@ public class SeasideBellona extends Player implements IFocus {
                 getFlat2Mod(currentTarget), // TODO DDJ
                 getPOW(powSkill1), // S1 pow is 1.0
                 getSkillEnhanceMod(EnhanceModSkill1),
-                0.0,
+                getExtMod(currentTarget),
                 getHitTypeMod(getElement(), currentTarget.getElement(),getCc(),getCdmg()),
                 getTargetDebuff(currentTarget),
                 getElementalMod(getElement(), currentTarget.getElement()),
@@ -121,7 +133,7 @@ public class SeasideBellona extends Player implements IFocus {
                     getFlat2Mod(currentTarget), // TODO DDJ
                     getPOW(powSkill2),
                     getSkillEnhanceMod(EnhanceModSkill2),
-                    0.0,
+                    getExtMod(currentTarget),
                     getHitTypeMod(getElement(), currentTarget.getElement(), getCc(), getCdmg()),
                     getTargetDebuff(currentTarget),
                     getElementalMod(getElement(), currentTarget.getElement()),
@@ -151,7 +163,7 @@ public class SeasideBellona extends Player implements IFocus {
                     getFlat2Mod(currentTarget), // TODO DDJ
                     getPOW(powSkill3),
                     getSkillEnhanceMod(EnhanceModSkill3),
-                    getExtMod(doubleAtk,currentTarget), // if crit, 20% bonus damage
+                    getExtS3Mod(doubleAtk,currentTarget), // if crit, 20% bonus damage
                     doubleAtk,
                     getTargetDebuff(currentTarget),
                     getElementalMod(getElement(), currentTarget.getElement()),
@@ -507,11 +519,19 @@ public class SeasideBellona extends Player implements IFocus {
         }
     }
 
-    public static double getExtMod(double hitTypeMod, Player currentTarget){
+    public static double getExtS3Mod(double hitTypeMod, Player currentTarget){
         double ExtMod = 0.0;
         if (hitTypeMod > 1.4) { // if crit
             ExtMod = ExtMod + 0.2;
         }
+        if (currentTarget instanceof Wyvern) {
+            ExtMod = ExtMod + 0.3; // 30% more damage if water against wyvern
+        }
+        return ExtMod;
+    }
+
+    public static double getExtMod(Player currentTarget){
+        double ExtMod = 0.0;
         if (currentTarget instanceof Wyvern) {
             ExtMod = ExtMod + 0.3; // 30% more damage if water against wyvern
         }

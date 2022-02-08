@@ -52,7 +52,7 @@ public class Wyvern extends Player {
      **********************************************************/
 
 
-    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1) {
+    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
         if ((DebuffsList.get(7) != null) && (DebuffsList.get(7).duration > 0)) { // if stunned
             System.out.println(getName() + " is not supposed to be stun, go check the code");
         } else if ((DebuffsList.get(21) != null) && (DebuffsList.get(21).duration > 0)) { // if taunted, do S1 onto caster of taunt
@@ -61,9 +61,21 @@ public class Wyvern extends Player {
             System.out.println(getName() + " is not supposed to be stun, go check the code");
         } else if (cdSkill2 == 0) {
             skill2(currentTarget,playerList,listA,tickValue);
-        } else { // reduce cd of S2 and S3 by 1
-            skill1(currentTarget,playerList,tickValue);
+        } else { // reduce cd of S3 by 1
+            Random r = new Random();
+            int randomInt = r.nextInt(dualList.size());
+            if (dualList.get(randomInt).equals("N") || listA.size() < 2){
+                skill1(currentTarget,playerList,tickValue);
+            } else {
+                skill1(currentTarget,playerList,tickValue);
+                skillDual(currentTarget,playerList,tickValue,listA,listE1,dualList);
+            }
+
         }
+    }
+
+    public void skillDual(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
+        skill1(currentTarget,playerList,tickValue);
     }
 
     /**********************************************************
@@ -104,79 +116,81 @@ public class Wyvern extends Player {
             int buffIndex = r.nextInt(bufflist.size());
             int randomInt = r.nextInt(100);
             if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                currentTarget.getBuffsList().get(buffIndex).setDuration(0); //
+                currentTarget.getBuffsList().get(bufflist.get(buffIndex)).setDuration(0); //
             }
         }
 
         // push back at 10%
         int randomInt = r.nextInt(100);
         if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-            (currentTarget).setNumberOftick(Math.max(0, (currentTarget).getNumberOftick() + 0.1 * tickValue)); // Réduit de x% le CR de la cible
-            (currentTarget).setCRinPercentage(100 * (1 - (currentTarget).getNumberOftick() / (tickValue * 100 / (currentTarget).getSpeed()))); // current CR = nb_ticks/total_ticks
+            currentTarget.setCRinPercentage(currentTarget.getCRinPercentage() - 10); // reduce by 10% target's CR
+            currentTarget.setNumberOftick((100 - currentTarget.getCRinPercentage()) / (currentTarget.getSpeed() / tickValue)); // current CR = nb_ticks/total_ticks
         }
 
         // self bonus of 1.5% atk each hit
         setSelfAtkMod(getSelfAtkMod()+0.015);
 
-
-        skill1_additional_hits(currentTarget,playerList, tickValue); // two next hits of fireball similar to S1
-
+        if (currentTarget.getHealth() > 0 ) { // if target is still alive
+            skill1_additional_hits(currentTarget, playerList, tickValue); // two next hits of fireball similar to S1
+        }
     }
 
     public void skill1_additional_hits(Player currentTarget,Map<String, Player> playerList, double tickValue) {
         // two next attacks of fireball
         Random r = new Random();
         for (int i = 0; i< 2; i++) {
-            applyDamage(currentTarget, damageDealt(getAttack(),
-                    getAtkMods(BuffsList,DebuffsList) + getSelfAtkMod() , // automatically check if it has attack buff
-                    rateSkill1up, // S1 Rate
-                    0.0, // S1 has no flat mod
-                    getFlat2Mod(currentTarget), // TODO DDJ
-                    getPOW(powSkill1), // S1 pow is 1.0
-                    getSkillEnhanceMod(EnhanceModSkill1),
-                    0.0, // no external mod
-                    getHitTypeMod(getElement(), currentTarget.getElement(),getCc(),getCdmg()),
-                    getTargetDebuff(currentTarget),
-                    getElementalMod(getElement(), currentTarget.getElement()),
-                    currentTarget.getDefense(),
-                    getDefbreakMod(currentTarget),
-                    0.0, getDamageReduction(playerList.get(getName()),tickValue), 0.0 // TODO : take in account aurius / adamant
-            ));
+            if (currentTarget.getHealth() > 0 ) { // if target is still alive
+                applyDamage(currentTarget, damageDealt(getAttack(),
+                        getAtkMods(BuffsList, DebuffsList) + getSelfAtkMod(), // automatically check if it has attack buff
+                        rateSkill1up, // S1 Rate
+                        0.0, // S1 has no flat mod
+                        getFlat2Mod(currentTarget), // TODO DDJ
+                        getPOW(powSkill1), // S1 pow is 1.0
+                        getSkillEnhanceMod(EnhanceModSkill1),
+                        0.0, // no external mod
+                        getHitTypeMod(getElement(), currentTarget.getElement(), getCc(), getCdmg()),
+                        getTargetDebuff(currentTarget),
+                        getElementalMod(getElement(), currentTarget.getElement()),
+                        currentTarget.getDefense(),
+                        getDefbreakMod(currentTarget),
+                        0.0, getDamageReduction(playerList.get(getName()), tickValue), 0.0 // TODO : take in account aurius / adamant
+                ));
 
-            // remove one buff at random
-            ArrayList<Integer> bufflist = new ArrayList<>();
-            Iterator<Map.Entry<Integer, TempEffect>> it = currentTarget.getBuffsList().entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<Integer, TempEffect> pair = it.next();
-                TempEffect j = pair.getValue(); // i is a buff
-                if (j != null) {
-                    if (j.duration > 0) {
-                        bufflist.add(j.getType()); // remember the type of buff on this list
+                // remove one buff at random
+                ArrayList<Integer> bufflist = new ArrayList<>();
+                Iterator<Map.Entry<Integer, TempEffect>> it = currentTarget.getBuffsList().entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<Integer, TempEffect> pair = it.next();
+                    TempEffect j = pair.getValue(); // i is a buff
+                    if (j != null) {
+                        if (j.duration > 0) {
+                            bufflist.add(j.getType()); // remember the type of buff on this list
+                        }
                     }
                 }
-            }
 
-            if (bufflist.size()>0) {
-                int buffIndex = r.nextInt(bufflist.size());
-                int randomInt = r.nextInt(100);
-                if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                    currentTarget.getBuffsList().get(buffIndex).setDuration(0); //
+                if (bufflist.size() > 0) {
+                    int buffIndex = r.nextInt(bufflist.size());
+                    int randomInt = r.nextInt(100);
+                    if (randomInt > Math.max(currentTarget.getEffres() - getEffres(), 15)) { // bypass innate 15% ER
+                        currentTarget.getBuffsList().put(buffIndex,null); //
+                    }
                 }
-            }
 
-            // push back at 10%
-            int randomInt = r.nextInt(100);
-            if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                (currentTarget).setNumberOftick(Math.max(0, (currentTarget).getNumberOftick() + 0.1 * tickValue)); // Réduit de x% le CR de la cible
-                (currentTarget).setCRinPercentage(100 * (1 - (currentTarget).getNumberOftick() / (tickValue * 100 / (currentTarget).getSpeed()))); // current CR = nb_ticks/total_ticks
-            }
+                // push back at 10%
+                int randomInt = r.nextInt(100);
+                if (randomInt > Math.max(currentTarget.getEffres() - getEffres(), 15)) { // bypass innate 15% ER
+                    currentTarget.setCRinPercentage(currentTarget.getCRinPercentage() - 10); // reduce by 10% target's CR
+                    currentTarget.setNumberOftick((100 - currentTarget.getCRinPercentage()) / (currentTarget.getSpeed() / tickValue)); // current CR = nb_ticks/total_ticks
+                }
 
-            // self bonus of 5% atk each hit
-            setSelfAtkMod(getSelfAtkMod()+0.015);
+                // self bonus of 5% atk each hit
+                setSelfAtkMod(getSelfAtkMod() + 0.015);
+            }
         }
 
         // SeasideBellona test
-        for (Map.Entry player : playerList.entrySet()) {
+        for (Map.Entry player : playerList.entrySet()) { // TODO : ListA instead of all players
             Player pl = (Player) player.getValue();
             if (pl instanceof IFocus){
                 ((IFocus) pl).setFocus(((IFocus) pl).getFocus() + 1);

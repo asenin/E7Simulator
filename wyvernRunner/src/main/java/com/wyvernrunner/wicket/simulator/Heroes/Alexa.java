@@ -44,7 +44,6 @@ public class Alexa extends Player {
     private ArrayList<TempEffect> TickDamageList = new ArrayList<>(); // for burns / poisons / bombs
     private Map<Integer, TempEffect> BuffsList = new HashMap<>(); // unique debuffs
 
-
     /**********************************************************
      *                    INSTANCIATION                       *
      **********************************************************/
@@ -86,7 +85,7 @@ public class Alexa extends Player {
      **********************************************************/
 
 
-    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1) {
+    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
         if ((DebuffsList.get(7) != null) && (DebuffsList.get(7).duration > 0)) { // if stunned
             // doesn't do anything because stunned
             if (cdSkill2 > 0) { // reduce cd of S2 by 1
@@ -105,9 +104,22 @@ public class Alexa extends Player {
             } else if (cdSkill2 == 0) {
                 skill2(currentTarget, playerList,tickValue);
             } else { // reduce cd of S2 and S3 by 1
-                skill1(currentTarget);
+                Random r = new Random();
+                int randomInt = r.nextInt(dualList.size());
+                if (dualList.get(randomInt).equals("N") || listA.size() < 2){
+                    skill1(currentTarget);
+                } else {
+                    skill1(currentTarget);
+                    skillDual(currentTarget,playerList,tickValue,listA,listE1, dualList);
+                }
+
             }
         }
+    }
+
+    // TODO : dual are not ready at all
+    public void skillDual(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
+        skill1(currentTarget);
     }
 
 
@@ -184,7 +196,7 @@ public class Alexa extends Player {
         ));
 
         // DEBUFFS
-
+        // TODO DEBUFF TO CHECK
         landPoisonDebuff(currentTarget,new Poison(2,poisonRateSkill2up,playerList.get(getName()),currentTarget));
         landPoisonDebuff(currentTarget,new Poison(2,poisonRateSkill2up,playerList.get(getName()),currentTarget));
 
@@ -583,11 +595,34 @@ public class Alexa extends Player {
         }
     }
 
-    public static double getExtMod(Player currentTarget){
+    public double getExtMod(Player currentTarget){
         double ExtMod = 0.0;
         if (currentTarget instanceof Wyvern) {
             ExtMod = ExtMod + 0.3; // 30% more damage if water against wyvern
         }
+
+        // COUNT NUMBER OF TICK DAMAGE DEBUFF
+        int numberOfDebuffs = 0;
+        for (TempEffect element : currentTarget.getTickDamageList()) {
+            numberOfDebuffs++;
+        }
+
+        // COUNT NUMBER OF UNIQUE DEBUFF
+        TempEffect i;
+        Iterator<Map.Entry<Integer, TempEffect>> it = DebuffsList.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Integer, TempEffect> pair = it.next();
+            i = pair.getValue(); // i = TempEffect
+            if (i != null){
+                if (i.duration >0){
+                    numberOfDebuffs++;
+                }
+            }
+        }
+        if (numberOfDebuffs > 1) {
+            ExtMod = ExtMod + 0.3;
+        }
+
         return ExtMod;
     }
 

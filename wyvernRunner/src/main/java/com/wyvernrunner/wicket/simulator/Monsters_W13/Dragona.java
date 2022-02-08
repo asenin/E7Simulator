@@ -50,7 +50,7 @@ public class Dragona extends Player {
         super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual,element,team, shield);
     }
 
-    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue, ArrayList<String> listA, ArrayList<String> listE1) {
+    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
         if ((DebuffsList.get(7) != null) && (DebuffsList.get(7).duration > 0)) { // if stunned
             // doesn't do anything because stunned
             if (cdSkill2 > 0) { // reduce cd of S2 by 1
@@ -63,8 +63,20 @@ public class Dragona extends Player {
         } else if (cdSkill2 == 0) {
             skill2(currentTarget,playerList);
         } else { // reduce cd of S2 and S3 by 1
-            skill1(currentTarget,playerList,listE1);
+            Random r = new Random();
+            int randomInt = r.nextInt(dualList.size());
+            if (dualList.get(randomInt).equals("N") || listA.size() < 2){
+                skill1(currentTarget,playerList,listE1);
+            } else {
+                skill1(currentTarget,playerList,listE1);
+                skillDual(currentTarget,playerList,tickValue,listA,listE1, dualList);
+            }
+
         }
+    }
+
+    public void skillDual(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
+        skill1(currentTarget,playerList,listE1);
     }
 
     /**********************************************************

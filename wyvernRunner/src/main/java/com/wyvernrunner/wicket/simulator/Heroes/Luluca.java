@@ -15,7 +15,7 @@ public class Luluca extends Player {
     private double rateSkill1up = 1.0 ;
     private double EnhanceModSkill1 = 0.0;
     private double powSkill1 = 1;
-    private double defbreakSkill1up = 0.65;
+    private double defbreakSkill1up = 1.0;
 
     private double EnhanceModSkill2 = 0.0;
     private int cdSkill2 = 0;
@@ -60,7 +60,7 @@ public class Luluca extends Player {
      **********************************************************/
 
 
-    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1) {
+    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1,ArrayList<String> dualList) {
         if ((DebuffsList.get(7) != null) && (DebuffsList.get(7).duration > 0)) { // if stunned
             // doesn't do anything because stunned
             if (cdSkill2 > 0) { // reduce cd of S2 by 1
@@ -83,8 +83,19 @@ public class Luluca extends Player {
                 skill1(currentTarget);
             }
              */
-            skill1(playerList,currentTarget);
+            Random r = new Random();
+            int randomInt = r.nextInt(dualList.size());
+            if (dualList.get(randomInt).equals("N") || listA.size() < 2){
+                skill1(playerList,currentTarget);
+            } else {
+                skill1(playerList,currentTarget);
+                skillDual(currentTarget,playerList,tickValue,listA,listE1, dualList);
+            }
         }
+    }
+
+    public void skillDual(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
+        skill1(playerList,currentTarget);
     }
 
     /**********************************************************
@@ -199,8 +210,7 @@ public class Luluca extends Player {
     }
 
     public static double getAtkMods(Map<Integer, TempEffect> BuffsList,Map<Integer, TempEffect> DebuffsList) { // check atk buff and atk debuff
-        // check atk buff
-        if (BuffsList.get(2) == null) {
+        if (BuffsList.get(2) == null) { // check atk buff
             if (DebuffsList.get(1) == null) {
                 return 0;
             } else if (DebuffsList.get(1).getDuration() > 0) {
@@ -226,7 +236,6 @@ public class Luluca extends Player {
             }
         }
     }
-
 
     public static double getFlat2Mod(Player target){ // DDJ?
         return target.getMaxhp()*0.03;
@@ -423,6 +432,7 @@ public class Luluca extends Player {
         }
         return ExtMod;
     }
+
     public static double getS3ExtMod(Player currentTarget) {
         double ExtMod = 0.0;
         if (currentTarget instanceof Wyvern) {

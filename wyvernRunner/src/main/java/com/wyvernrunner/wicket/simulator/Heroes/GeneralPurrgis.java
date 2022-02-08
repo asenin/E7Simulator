@@ -48,7 +48,7 @@ public class GeneralPurrgis extends Player {
      **********************************************************/
 
 
-    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1) {
+    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1,ArrayList<String> dualList) {
         if ((DebuffsList.get(7) != null) && (DebuffsList.get(7).duration > 0)) { // if stunned
             // doesn't do anything because stunned
             if (cdSkill3 > 0) { // reduce cd of S3 by 1
@@ -61,10 +61,22 @@ public class GeneralPurrgis extends Player {
         } else {
             if (cdSkill3 == 0) {
                 skill3(listE1,playerList,listA);
-            } else { // reduce cd of S2 and S3 by 1
-                skill1(currentTarget);
+            } else { // reduce cd of S3 by 1
+                Random r = new Random();
+                int randomInt = r.nextInt(dualList.size());
+                if (dualList.get(randomInt).equals("N") || listA.size() < 2){
+                    skill1(currentTarget);
+                } else {
+                    skill1(currentTarget);
+                    skillDual(currentTarget,playerList,tickValue,listA,listE1, dualList);
+                }
+
             }
         }
+    }
+
+    public void skillDual(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
+        skill1(currentTarget);
     }
 
     /**********************************************************
@@ -175,8 +187,7 @@ public class GeneralPurrgis extends Player {
     }
 
     public static double getAtkMods(Map<Integer, TempEffect> BuffsList,Map<Integer, TempEffect> DebuffsList) { // check atk buff and atk debuff
-        // check atk buff
-        if (BuffsList.get(2) == null) {
+        if (BuffsList.get(2) == null) { // check atk buff
             if (DebuffsList.get(1) == null) {
                 return 0;
             } else if (DebuffsList.get(1).getDuration() > 0) {
@@ -202,7 +213,6 @@ public class GeneralPurrgis extends Player {
             }
         }
     }
-
 
     public static double getFlat2Mod(Player target){ // DDJ?
         // check if Alexa has DDJ

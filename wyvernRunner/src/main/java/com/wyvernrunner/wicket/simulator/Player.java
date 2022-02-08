@@ -232,7 +232,10 @@ public abstract class Player {
         return this.DebuffsList;
     }
 
-    public void skillAI (Player currentTarget, Map<String , Player> playerList,double tickValue,ArrayList<String> listA,ArrayList<String> listE1){
+    public void skillAI (Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList){
+    }
+
+    public void skillDual(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList){
     }
 
 

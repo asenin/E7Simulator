@@ -1,37 +1,42 @@
-package com.wyvernrunner.wicket.simulator.Monsters_W13;
+package com.wyvernrunner.wicket.simulator.Heroes;
 
-import com.wyvernrunner.wicket.simulator.Heroes.GeneralPurrgis;
-import com.wyvernrunner.wicket.simulator.Heroes.SeasideBellona;
-import com.wyvernrunner.wicket.simulator.Interfaces.IFocus;
+import com.wyvernrunner.wicket.simulator.Monsters_W13.Wyvern;
 import com.wyvernrunner.wicket.simulator.Player;
-import com.wyvernrunner.wicket.simulator.TempEffects.Bleed;
-import com.wyvernrunner.wicket.simulator.TempEffects.Burn;
-import com.wyvernrunner.wicket.simulator.TempEffects.TempEffect;
+import com.wyvernrunner.wicket.simulator.TempEffects.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class Naga extends Player{
+public class Clarissa extends Player {
 
+    // DDJ +27
+    // attack : 2474
+    // defense : 894
+    // health : 9020
+    // speed : 203
+    // cc : 85%
+    // cdmg : 265
+    // eff : 86
+    // DA : 17.9% (12.9% + 5%)
     /**********************************************************
      *                    SKILL RATIOS                        *
      **********************************************************/
 
-    private final double rateSkill1up = 1.0;
-    private final double EnhanceModSkill1 = 0.0;
-    private final double powSkill1 = 1.0;
-    private final double bleedRateSkill1up = 0.5;
+    private double rateSkill1up = 1.0 ;
+    private double powSkill1 = 1.0;
+    private double EnhanceModSkill1 = 0.15;
+    private double bleedRateSkill1up = 1.0; // EE S1
+    private double defbRateSkill1up = 0.5; // maxed S1 debuff chance
 
-    private final double rateSkill2up = 1.0; // S2 ratio is 1.0
-    private final double powSkill2 = 1.0;
-    private final double EnhanceModSkill2 = 0.0;
-    private final double burnRateSkill2up = 1.0;
-
-    private int cdSkill2 = 3;
-    private int cdGlobalSkill2 = 3;
-
+    private double rateSkill3up = 0.8;
+    private double powSkill3 = 1;
+    private double EnhanceModSkill3 = 0.0;
+    private double bleedRateSkill3up = 1.0;
+    private double defbRateSkill3up = 0.5; // 50% by default
+    private int cdSkill3 = 0;
+    private int cdGlobalSkill3 = 4;
 
     /**********************************************************
      *                  TEMPORARY EFFECTS                     *
@@ -42,57 +47,56 @@ public class Naga extends Player{
     private Map<Integer, TempEffect> BuffsList = new HashMap<>(); // unique debuffs
 
 
-
-
-    public Naga(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual,int element,int team, double shield) {
-        super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual,element,team, shield);
-    }
-
     /**********************************************************
-     *                    CHOOSE SKILL                        *
+     *                    INSTANCIATION                       *
      **********************************************************/
 
 
-    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
+    public Clarissa(String name, double speed, boolean alive, double attack, double defense, double health, float cc, int cdmg, int eff, int effres, int dual, int element, int team, double shield) {
+        super(name, speed, alive, attack, defense, health, cc, cdmg, eff, effres, dual,element, team, shield );
+    }
+
+    public void skillAI(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1,ArrayList<String> dualList) {
         if ((DebuffsList.get(7) != null) && (DebuffsList.get(7).duration > 0)) { // if stunned
             // doesn't do anything because stunned
-            if (cdSkill2 > 0) { // reduce cd of S2 by 1
-                cdSkill2--;
+            if (cdSkill3 > 0) { // reduce cd of S3 by 1
+                cdSkill3--;
             }
         } else if ((DebuffsList.get(21) != null) && (DebuffsList.get(21).duration > 0)) { // if taunted, do S1 onto caster of taunt
-            skill1(DebuffsList.get(21).caster,playerList,tickValue,listA,listE1,dualList);
+            skill1(playerList,DebuffsList.get(21).caster);
         } else if ((DebuffsList.get(25) != null) && (DebuffsList.get(25).duration > 0)) { // if silenced -> S1
-            skill1(currentTarget, playerList, tickValue,  listA,  listE1,dualList);
-        } else if (cdSkill2 == 0) {
-            skill2(currentTarget,playerList);
-        } else { // reduce cd of S3 by 1
-            Random r = new Random();
-            int randomInt = r.nextInt(dualList.size());
-            if (dualList.get(randomInt).equals("N") || listA.size() < 2){
-                skill1(currentTarget,playerList,tickValue,listA,listE1,dualList);
-            } else {
-                skill1(currentTarget,playerList,tickValue,listA,listE1,dualList);
-                skillDual(currentTarget,playerList,tickValue,listA,listE1,dualList);
-            }
+            skill1(playerList,currentTarget);
+        } else {
+            if (cdSkill3 == 0) {
+                skill3(listE1,playerList,listA);
+            } else { // reduce cd of S3 by 1
+                Random r = new Random();
+                int randomInt = r.nextInt(dualList.size());
+                if (dualList.get(randomInt).equals("N") || listA.size() < 2){
+                    skill1(playerList,currentTarget);
+                } else {
+                    skill1(playerList,currentTarget);
+                    skillDual(currentTarget,playerList,tickValue,listA,listE1, dualList);
+                }
 
+            }
         }
     }
 
     public void skillDual(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
-        skill1(currentTarget,playerList,tickValue,listA,listE1,dualList);
+        skill1(playerList,currentTarget);
     }
-
 
     /**********************************************************
      *                  SKILLS DESCRIPTION                    *
      **********************************************************/
 
 
-    public void skill1(Player currentTarget, Map<String, Player> playerList, double tickValue,ArrayList<String> listA,ArrayList<String> listE1, ArrayList<String> dualList) {
+    public void skill1(Map<String, Player> playerList,Player currentTarget) {
         applyDamage(currentTarget, damageDealt(getAttack(),
                 getAtkMods(BuffsList,DebuffsList), // automatically check if it has attack buff
                 rateSkill1up, // S1 Rate
-                0.0, // S1 has no flat mod
+                0.06*getMaxhp(), // 6% of caster hp
                 getFlat2Mod(currentTarget), // TODO DDJ
                 getPOW(powSkill1), // S1 pow is 1.0
                 getSkillEnhanceMod(EnhanceModSkill1),
@@ -102,59 +106,43 @@ public class Naga extends Player{
                 getElementalMod(getElement(), currentTarget.getElement()),
                 currentTarget.getDefense(),
                 getDefbreakMod(currentTarget),
-                0.0, getDamageReduction(currentTarget), 0.0
+                0.0, 0.0, 0.0
         ));
 
-        landBleedDebuff(currentTarget,new Bleed(2,bleedRateSkill1up,playerList.get(getName()),currentTarget));
+        landS1Debuff(currentTarget,new DecreaseDefense(2,defbRateSkill1up,playerList.get(getName()),currentTarget)); // 1 turn taunt
 
-
-        // Trigger a dual with someone
-        if (listE1.size() > 1) {
-            ArrayList<String> dualListS1 = new ArrayList<>();
-            for (String s : listE1) {
-                if ( ! s.equals(getName()) ){
-                    dualListS1.add(s); // get the names of who are alive
-                }
-            }
-            Random r = new Random();
-            int randomInt = r.nextInt(dualListS1.size());
-            playerList.get(dualListS1.get(randomInt)).skillAI(currentTarget, playerList, tickValue,  listA,  listE1,dualList);
-        }
-
-
-        // SeasideBellona test
-        for (Map.Entry player : playerList.entrySet()) {
-            Player pl = (Player) player.getValue();
-            if (pl instanceof IFocus){
-                ((IFocus) pl).setFocus(((IFocus) pl).getFocus() + 1);
-            }
+        if (cdSkill3 > 0) { // reduce cd of S3 by 1
+            cdSkill3--;
         }
     }
 
+    public void skill3(ArrayList<String> listE1,Map<String, Player> playerList,ArrayList<String> listA) {
 
-    public void skill2(Player currentTarget, Map<String, Player> playerList){
+        Player currentTarget;
+        for (String player : listE1) {
+            currentTarget = playerList.get(player);
+            applyDamage(currentTarget, damageDealt(getAttack(),
+                    getAtkMods(BuffsList,DebuffsList), // automatically check if it has attack buff
+                    rateSkill3up, // S3 Rate
+                    0.08*getMaxhp(), // 8% of caster max hp
+                    getFlat2Mod(currentTarget), // TODO DDJ
+                    getPOW(powSkill3),
+                    getSkillEnhanceMod(EnhanceModSkill3),
+                    0.0,
+                    getHitTypeMod(getElement(), currentTarget.getElement(),getCc(),getCdmg()),
+                    getTargetDebuff(currentTarget),
+                    getElementalMod(getElement(), currentTarget.getElement()),
+                    currentTarget.getDefense(),
+                    getDefbreakMod(currentTarget),
+                    0.0, 0.0, 0.0
+            ));
+        }
 
-        // DAMAGE
-        applyDamage(currentTarget, damageDealt(getAttack(),
-                getAtkMods(BuffsList,DebuffsList), // automatically check if it has attack buff
-                rateSkill2up, // S2 Rate
-                0.0, // S2 has no flat mod
-                getFlat2Mod(currentTarget), // TODO DDJ
-                getPOW(powSkill2),
-                getSkillEnhanceMod(EnhanceModSkill2),
-                0.0, // no external mod
-                getHitTypeMod(getElement(), currentTarget.getElement(),getCc(),getCdmg()),
-                getTargetDebuff(currentTarget),
-                getElementalMod(getElement(), currentTarget.getElement()),
-                currentTarget.getDefense(),
-                getDefbreakMod(currentTarget),
-                0.0, getDamageReduction(currentTarget), 0.0
-        ));
 
-        // DEBUFFS
+        // TODO BLEED - Later
 
-        landBleedDebuff(currentTarget,new Bleed(1,burnRateSkill2up,playerList.get(getName()),currentTarget));
-        cdSkill2 = cdGlobalSkill2; // put the skill on CD
+
+        cdSkill3 = cdGlobalSkill3; // put the skill on CD
     }
 
     /**********************************************************
@@ -183,8 +171,7 @@ public class Naga extends Player{
     }
 
     public static double getAtkMods(Map<Integer, TempEffect> BuffsList,Map<Integer, TempEffect> DebuffsList) { // check atk buff and atk debuff
-        // check atk buff
-        if (BuffsList.get(2) == null) {
+        if (BuffsList.get(2) == null) { // check atk buff
             if (DebuffsList.get(1) == null) {
                 return 0;
             } else if (DebuffsList.get(1).getDuration() > 0) {
@@ -495,52 +482,48 @@ public class Naga extends Player{
         }
     }
 
-    public static double getDamageReduction(Player target) {
-        if (target instanceof GeneralPurrgis){
-            return 0.15;
-        } else {
-            return 0.0;
-        }
-    }
 
     /**********************************************************
      *                  GETTERS AND SETTERS                   *
      **********************************************************/
 
 
-    public int getCdSkill2() {
-        return cdSkill2;
+    public int getCdSkill3() {
+        return cdSkill3;
     }
 
-    public void setCdSkill2(int cdSkill2) {
-        this.cdSkill2 = cdSkill2;
+    public void setCdSkill3(int cdSkill3) {
+        this.cdSkill3 = cdSkill3;
     }
+
 
     /**********************************************************
      *                  LANDING DEBUFF TEST                   *
      **********************************************************/
 
-    public void landBurnDebuff(Player currentTarget, TempEffect tempEffect) {
+    public void landS1Debuff(Player currentTarget, TempEffect tempEffect) {
         Random r = new Random();
         int randomInt = r.nextInt(100);
+        //System.out.println(randomInt + " and "+ tempEffect.rate);
         if (randomInt < tempEffect.rate) { // debuff effect triggers
             randomInt = r.nextInt(100);
-            if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                currentTarget.getTickDamageList().add(new Burn(tempEffect.duration, tempEffect.rate,tempEffect.caster,tempEffect.getTarget()));
+            if (randomInt > Math.max(currentTarget.getEffres()-getEff(), 15)){ // bypass innate 15% ER
+                currentTarget.getDebuffsList().put(3,tempEffect);
             }
         }
     }
 
-    public void landBleedDebuff(Player currentTarget, TempEffect tempEffect) {
-        Random r = new Random();
-        int randomInt = r.nextInt(100);
-        if (randomInt < tempEffect.rate) { // debuff effect triggers
-            randomInt = r.nextInt(100);
-            if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
-                currentTarget.getTickDamageList().add(new Bleed(tempEffect.duration, tempEffect.rate,tempEffect.caster,tempEffect.getTarget()));
+    public void landS3Debuff(Player currentTarget, TempEffect tempEffect) {
+        if (!(currentTarget instanceof Wyvern)){ // stun if not a wyvern
+            Random r = new Random();
+            int randomInt = r.nextInt(100);
+            if (randomInt < tempEffect.rate) { // debuff effect triggers
+                randomInt = r.nextInt(100);
+                if (randomInt > Math.max(currentTarget.getEffres()-getEffres(),15)){ // bypass innate 15% ER
+                    currentTarget.getDebuffsList().put(7,tempEffect);
+                }
             }
         }
+
     }
-
-
 }

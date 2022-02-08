@@ -21,13 +21,24 @@ public class Game {
     public static Player activePlayer;
     public static Map<String,Player> playerList = new HashMap<>();
     public static Map<String,Player> deadplayerList = new HashMap<>();
+    public static ArrayList<String> dualListA = new ArrayList<>();
+    public static ArrayList<String> dualListE = new ArrayList<>();
+    public static WeightedRandomness targetAllies = new WeightedRandomness();
 
     public static ArrayList<String> listA = new ArrayList<>(); // store names of the target lists of allies
     public static ArrayList<String> listE1 = new ArrayList<>(); // store names of the target lists of wave 1
     public static Player front;
-    public static boolean wyvernAlive = true; // true = dead / false = alive
     private ArrayList<Integer> dualArray = new ArrayList<>(); // contains every possibility for dual attacks
     private static boolean firstTurn = true;
+
+    /**********************************************************
+     *                        METRIC                          *
+     **********************************************************/
+
+
+    public static double compteur = 0;
+    public static double turn = 0;
+    public static double lulucaturn = 0;
 
 
     public Game(){
@@ -52,6 +63,8 @@ public class Game {
             deadplayerList.clear();
             listE1.clear();
             listA.clear();
+            dualListE.clear();
+            dualListA.clear();
 
             // Initiate the wave 1
             initGame(playerList);
@@ -98,7 +111,7 @@ public class Game {
 
                     if (activePlayer.getTeam() == 0) { // hero attacking
                         Player currentTarget = getLowHP(listE1);
-                        activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1); // if the current player is a hero, attacks a monster
+                        activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1,dualListA); // if the current player is a hero, attacks a monster
 
 
                         updateDeadList(listE1); // update enemy alive list
@@ -111,13 +124,14 @@ public class Game {
 
                     } else { // monster attacking
                         Player currentTarget = getTarget(listA); // find a target among allies
-                        activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1); // if the current player is a monster, attacks a hero
+                        activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1,dualListE); // if the current player is a monster, attacks a hero
 
                         if (currentTarget instanceof GeneralPurrgis) {
                             for (String player : listA) {
                                 Player pl = playerList.get(player);
                                 // actualise la CR bar de tout le monde en décalant tout le monde avec le push de GPurrgis
                                 pl.setCRinPercentage(pl.getCRinPercentage() + 16);
+                                pl.setNumberOftick((100 - pl.getCRinPercentage()) / (pl.getSpeed() / tickValue));
                             }
                         }
 
@@ -130,8 +144,6 @@ public class Game {
                                 }
                             }
                         }
-
-
                         updateDeadList(listA); // update allies alive list
                     }
                 }
@@ -166,6 +178,9 @@ public class Game {
 
              */
 
+            dualListE.clear();
+            dualListA.clear();
+
 
             /**********************************************************
              *                   BOSS FIGHT START                     *
@@ -197,7 +212,7 @@ public class Game {
 
                     if (activePlayer.getTeam() == 0) { // hero attacking
                         Player currentTarget = getLowHP(listE1);
-                        activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1); // if the current player is a hero, attacks a monster
+                        activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1,dualListA); // if the current player is a hero, attacks a monster
 
                         if (activePlayer.getElement() != 1) { // if active player is not water, Wyvern self CR pushes 20%
                             for (String player : listE1) { // only wyvern
@@ -219,26 +234,35 @@ public class Game {
                         if (activePlayer.getShield() > 0 && activePlayer instanceof Wyvern) {
                             ((Wyvern) activePlayer).skill2blow(playerList, tickValue, listA, listE1); // if wyvern has shield, it means it's time to blow entire team
                         } else {
-                            activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1); // if the current player is a monster, attacks a hero
+                            activePlayer.skillAI(currentTarget, playerList, tickValue, listA, listE1,dualListE); // if the current player is a monster, attacks a hero
                         }
                         if (currentTarget instanceof GeneralPurrgis && currentTarget.getHealth() > 0) { // if target is GP and alive
                             for (String player : listA) {
                                 Player pl = playerList.get(player);
-                                pl.setNumberOftick(Math.max(0, pl.getNumberOftick() - 0.16 * tickValue)); // actualise la CR bar de tout le monde en décalant tout le monde
-                                // avec le push de GPurrgis
-                                pl.setCRinPercentage(100 * (1 - pl.getNumberOftick() / (tickValue * 100 / pl.getSpeed())));
+                                // actualise la CR bar de tout le monde en décalant tout le monde avec le push de GPurrgis
+                                pl.setCRinPercentage(pl.getCRinPercentage() + 16);
+                                pl.setNumberOftick((100 - pl.getCRinPercentage()) / (pl.getSpeed() / tickValue));
                             }
                         }
 
-                        if (currentTarget instanceof IFocus) {
-                            // depending on the stacks
-                            if (((IFocus) currentTarget).getFocus() > 4) { // If the target was SeasideBellona, we check the nb of stacks
-                                ((IFocus) currentTarget).triggerFocus(currentTarget, playerList, tickValue, listA, listE1); // Use S2
-                                ((IFocus) currentTarget).setFocus(0); // reset stacks
+                        for (String Focusunit : listA) {
+                            if (playerList.get(Focusunit) instanceof IFocus) {
+                                // depending on the stacks
+                                if (((IFocus) playerList.get(Focusunit)).getFocus() > 4) { // If the target was SeasideBellona, we check the nb of stacks
+                                    ((IFocus) playerList.get(Focusunit)).triggerFocus(playerList.get(Focusunit), playerList, tickValue, listA, listE1); // Use S2
+                                    ((IFocus) playerList.get(Focusunit)).setFocus(0); // reset stacks
+                                }
                             }
                         }
 
                         updateDeadList(listA); // update allies alive list
+
+                        // def break count
+                        if (activePlayer.getDebuffsList().get(3) != null && activePlayer.getDebuffsList().get(3).getDuration() > 0 ){
+                            compteur++;
+                        }
+                        turn++;
+
                     }
                 }
 
@@ -257,7 +281,6 @@ public class Game {
                 /**********************************************************
                  *                     END OF A TURN                      *
                  **********************************************************/
-
             }
 
             /**********************************************************
@@ -272,7 +295,7 @@ public class Game {
              */
 
 
-            if (listE1.size() < 1) {
+            if (listE1.size() == 0) {
                 victory++;
             }
 
@@ -287,6 +310,9 @@ public class Game {
         System.out.println("Execution time in nanoseconds  : " + timeElapsed);
         System.out.println("Execution time in milliseconds : " + timeElapsed / 1000000);
         System.out.println("Winrate against wave 1 + wyvern is : " + (victory/100000)*100 + "%");
+        System.out.println("Average def break uptime: " + (compteur/turn)*100 + "%");
+        //System.out.println("Luluca / Wyvern turn ratio is : " + (lulucaturn/turn)*100 + "%");
+        //System.out.println("Wyvern took: " + turn+ " turns");
 
 
 
@@ -317,8 +343,17 @@ public class Game {
                 playerList.remove(deadName);
                 iterator.remove(); // remove the player from list
 
+                // handle dual attack list
+                if (deadplayerList.get(deadName).getTeam() == 0){
+                    for (String name : listA) {
+                        Collections.replaceAll(dualListA,deadName,"N");
+                    }
+                } else {
+                    for (String name : listE1) {
+                        Collections.replaceAll(dualListE,deadName,"N");
+                    }
+                }
             }
-
         }
     }
 
@@ -385,7 +420,7 @@ public class Game {
         // Monster
         Player p5 = new Dragona("Dragona1", 175, true, 5294, 1392, 20241, 50, 150, 0, 0, 5,2,1,0);
         Player p6 = new Dragona("Dragona2", 175, true, 5294, 1392, 20241, 50, 150, 0, 0, 5,2,1,0);
-        Player p7 = new Naga("Naga", 154, true, 2800, 1340, 13354, 50, 150, 0, 0, 5,2,1,0);
+        Player p7 = new Naga("Naga", 154, true, 2800, 1340, 13354, 50, 150, 0, 0, 0,2,1,0);
 
 
 
@@ -420,6 +455,12 @@ public class Game {
             player.setCRinPercentage((player.getSpeed() * 100 / tickValue)+(minRNG + (random * (maxRNG - minRNG)))); // initialise la valeur et facilite l'affichage
             player.setNumberOftick(100 / (player.getSpeed() / tickValue)); //
         }
+
+        // init allies dual attack list
+        initDualList(listA,dualListA);
+
+        // init enemies dual attack list
+        initDualList(listE1,dualListE);
     }
 
     public static void initBoss(){
@@ -493,6 +534,25 @@ public class Game {
                 }
             }
         }
+
+        // init allies dual attack list
+        initDualList(listA,dualListA);
+
+        // init enemies dual attack list
+        initDualList(listE1,dualListE);
+
+    }
+
+    public static void initDualList(ArrayList<String> list, ArrayList<String> dualList){
+        // prepare dual attack list for the fight
+        for (String player : list) {
+            for (int i = 0; i < playerList.get(player).getDual() - 1; i++) {
+                dualList.add(playerList.get(player).getName()); // add "dualattack chance" times its name
+            }
+        }
+        for (int i = 0; i < 100-dualList.size()-1 ; i++){
+            dualList.add("N");
+        }
     }
 
     public static void updateTempEffect(Player activePlayer){
@@ -504,7 +564,7 @@ public class Game {
             Map.Entry<Integer, TempEffect> pair = it.next();
             i = pair.getValue(); // i = TempEffect
             if (i != null) {
-                if (i.duration > 0) {
+                if (i.duration >= 0) {
                     i.setDuration(i.getDuration() - 1); //
                     if (i.duration == 0) {
                         //i.resetEffects(activePlayer, activePlayer); // caster,currentTarget : current target is the one resetting the debuff, ignore caster
@@ -521,7 +581,7 @@ public class Game {
             Map.Entry<Integer, TempEffect> pair = it.next();
             i = pair.getValue(); // i = TempEffect
             if (i != null) {
-                if (i.duration > 0) {
+                if (i.duration >= 0) {
                     i.setDuration(i.getDuration() - 1);
                     if (i.duration == 0) {
                         //i.resetEffects(activePlayer, activePlayer); // caster,currentTarget : current target is the one resetting the debuff, ignore caster
@@ -588,21 +648,29 @@ public class Game {
     public static Player getTarget(ArrayList<String> list){ // return the ally to target for monsters
         double randNumber = Math.random();
         randNumber = randNumber * 100;
+        ArrayList<String> targets = new ArrayList<>();
+        targets.addAll(list);
+
         if (front.getAlive()){ // if he is alive
-            if (list.size() > 2){ // case front is 40% and rest is same probability
-                if (randNumber < 40){ // target the front at 40%
-                    return front;
-                } else { // target the dpses
-                    int index = new Random().nextInt(list.size()-1); // generate [0,list.size]
-                    return playerList.get(list.get(index)); // get the player with the name
-                }
-            } else {
-                if (randNumber > 60){
-                    return front; // get the front
-                } else {
-                    return playerList.get(list.get(0)); // get the other survivor
-                }
+            int alliesalive = targets.size();
+            switch (alliesalive) { // number of allies alive
+                case 4 :
+                    if (randNumber < 40) { // target the front at 40%
+                        return front;
+                    }
+                case 3 :
+                    if (randNumber < 50) {
+                        return front;
+                    }
+                case 2 :
+                    if (randNumber < 67){
+                        return front;
+                    }
+                case 1 :
+                    return playerList.get(list.get(0));
             }
+            int index = new Random().nextInt(list.size()-1); // generate [0,list.size]
+            return playerList.get(list.get(index)); // get the player with the name
         } else { // front is dead everyone has the same chance to get targeted
             int index = new Random().nextInt(list.size()); // generate [0,list.size]
             return playerList.get(list.get(index)); // get the player with the name
